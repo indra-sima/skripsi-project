@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Preview</title>
+</head>
+
+<body>
+
+    <h1>Pratinjau Video</h1>
+
+    <video width="720" controls>
+
+        <source
+            src="{{ url_for('static',
+            filename='uploads/' + filename) }}"
+            type="video/mp4"
+        >
+
+    </video>
+
+    <br><br>
+
+    <p>{{ filename }}</p>
+
+</body>
+
+</html>

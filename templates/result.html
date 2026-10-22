@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Analisis | VerDeep</title>
+
+    <style>
+        :root {
+            --navy: #102A43;
+            --navy-dark: #081D2D;
+            --teal: #0F9D8A;
+            --teal-dark: #087B6C;
+            --coral: #E05252;
+            --amber: #F59E0B;
+            --background: #CFE2E8;
+            --white: #FFFFFF;
+            --text: #243B53;
+            --muted: #627D98;
+            --border: #D9E2EC;
+            --soft-teal: #E5F7F3;
+            --soft-coral: #FDECEC;
+            --soft-amber: #FFF7E5;
+            --shadow: 0 16px 36px rgba(16, 42, 67, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            position: relative;
+            isolation: isolate;
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.55;
+            background: var(--background);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+
+            background-color: var(--background);
+            background-image:
+                linear-gradient(
+                    180deg,
+                    rgba(225, 243, 242, 0.20) 0%,
+                    rgba(235, 244, 247, 0.30) 48%,
+                    rgba(220, 235, 241, 0.42) 100%
+                ),
+                url("{{ url_for('static', filename='images/veriframe-background-concept.png') }}");
+            background-repeat: no-repeat, no-repeat;
+            background-position: center, center;
+            background-size: cover, cover;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(205, 220, 230, 0.72);
+            background: rgba(255, 255, 255, 0.48);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .navbar-content {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--navy);
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--navy);
+            color: var(--white);
+            font-size: 1.05rem;
+            box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
+        }
+
+        .brand-text small {
+            display: block;
+            margin-top: 1px;
+            color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .back-link {
+            color: var(--navy);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .back-link:hover {
+            color: var(--teal);
+        }
+
+        .page-header {
+            padding: 48px 0 28px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 13px;
+            color: var(--muted);
+            font-size: 0.83rem;
+        }
+
+        .breadcrumb a {
+            color: var(--teal-dark);
+            font-weight: 700;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: var(--navy);
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.16;
+            letter-spacing: -0.9px;
+        }
+
+        .page-header p {
+            max-width: 720px;
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        .results-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: stretch;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .panel,
+        .method-card,
+        .frames-card {
+            overflow: hidden;
+            border: 1px solid rgba(205, 220, 230, 0.78);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.78);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 21px 24px 18px;
+            border-bottom: 1px solid rgba(217, 226, 236, 0.76);
+            background: rgba(255, 255, 255, 0.20);
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.14rem;
+        }
+
+        .panel-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .panel-body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .status-card {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 24px;
+            border-radius: 14px;
+        }
+
+        .status-card.real {
+            border: 1px solid rgba(117, 193, 181, 0.82);
+            background: rgba(229, 247, 243, 0.82);
+        }
+
+        .status-card.deepfake {
+            border: 1px solid rgba(231, 151, 151, 0.82);
+            background: rgba(253, 236, 236, 0.84);
+        }
+
+        .result-kicker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.55px;
+            text-transform: uppercase;
+        }
+
+        .result-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .real .result-dot {
+            background: var(--teal);
+        }
+
+        .deepfake .result-dot {
+            background: var(--coral);
+        }
+
+        .result-label {
+            margin: 10px 0 7px;
+            color: var(--navy);
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            line-height: 1;
+        }
+
+        .result-copy {
+            margin: 0;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .score-box {
+            padding: 12px 14px;
+            border: 1px solid rgba(16, 42, 67, 0.12);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.64);
+        }
+
+        .score-box span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
+
+        .score-box strong {
+            display: block;
+            margin-top: 3px;
+            color: var(--navy);
+            font-size: 1.25rem;
+        }
+
+        .score-section {
+            margin-top: 18px;
+        }
+
+        .score-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .score-heading span {
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        .score-heading strong {
+            color: var(--navy);
+            font-size: 0.88rem;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+            border-radius: 99px;
+            background: rgba(221, 232, 236, 0.92);
+        }
+
+        .progress-value {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            transition: width 0.7s ease;
+        }
+
+        .real .progress-value {
+            background: linear-gradient(90deg, #0F9D8A, #39BBAA);
+        }
+
+        .deepfake .progress-value {
+            background: linear-gradient(90deg, #E05252, #ED8585);
+        }
+
+        .score-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+
+        .interpretation {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.56);
+            color: var(--text);
+            font-size: 0.8rem;
+        }
+
+        .interpretation-icon {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--navy);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            width: 100%;
+            margin-top: auto;
+            padding-top: 24px;
+            padding-bottom: 65px;
+        }
+
+        .button {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            background: var(--teal);
+            color: var(--white);
+            box-shadow: 0 7px 15px rgba(15, 157, 138, 0.18);
+        }
+
+        .button-primary:hover {
+            background: var(--teal-dark);
+        }
+
+        .button-secondary {
+            border: 1px solid rgba(205, 220, 230, 0.90);
+            background: rgba(255, 255, 255, 0.72);
+            color: var(--navy);
+        }
+
+        .button-secondary:hover {
+            background: rgba(243, 247, 249, 0.92);
+        }
+
+        .video-shell {
+            overflow: hidden;
+            border-radius: 11px;
+            background: #06131F;
+        }
+
+        .video-shell video {
+            display: block;
+            width: 100%;
+            max-height: 230px;
+            background: #06131F;
+        }
+
+        .file-information {
+            display: grid;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .file-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 9px 12px;
+            border: 1px solid rgba(217, 226, 236, 0.74);
+            border-radius: 8px;
+            background: rgba(250, 252, 253, 0.58);
+            font-size: 0.81rem;
+        }
+
+        .file-row span {
+            flex: 0 0 auto;
+            color: var(--muted);
+        }
+
+        .file-row strong {
+            min-width: 0;
+            max-width: 65%;
+            overflow: hidden;
+            color: var(--navy);
+            text-align: right;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .method-card {
+            margin-bottom: 24px;
+        }
+
+        .method-card-inner {
+            padding: 22px 24px;
+        }
+
+        .method-card h2 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.07rem;
+        }
+
+        .method-card p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .pipeline-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            overflow: hidden;
+            margin-top: 18px;
+            border: 1px solid rgba(217, 226, 236, 0.80);
+            border-radius: 10px;
+            background: rgba(217, 226, 236, 0.76);
+        }
+
+        .pipeline-item {
+            padding: 14px 13px;
+            background: rgba(255, 255, 255, 0.62);
+        }
+
+        .pipeline-item span {
+            display: block;
+            color: var(--teal-dark);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .pipeline-item strong {
+            display: block;
+            margin-top: 4px;
+            color: var(--navy);
+            font-size: 0.81rem;
+            line-height: 1.35;
+        }
+
+        .frames-card {
+            margin-bottom: 24px;
+        }
+
+        .frames-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px 17px;
+            border-bottom: 1px solid rgba(217, 226, 236, 0.76);
+            background: rgba(255, 255, 255, 0.20);
+        }
+
+        .frames-card-header h2 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.07rem;
+        }
+
+        .frames-card-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .frames-count {
+            flex: 0 0 auto;
+            padding: 6px 10px;
+            border: 1px solid rgba(185, 228, 221, 0.90);
+            border-radius: 999px;
+            background: rgba(229, 247, 243, 0.76);
+            color: var(--teal-dark);
+            font-size: 0.76rem;
+            font-weight: 800;
+        }
+
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(10, minmax(0, 1fr));
+            gap: 8px;
+            padding: 20px 24px 23px;
+        }
+
+        .frame-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: #EAF0F4;
+        }
+
+        .frame-item img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .frame-number {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            min-width: 24px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(8, 29, 45, 0.80);
+            color: var(--white);
+            font-size: 0.62rem;
+            font-weight: 800;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .frames-empty {
+            padding: 25px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        .frames-note {
+            margin: 0;
+            padding: 13px 24px 16px;
+            border-top: 1px solid rgba(217, 226, 236, 0.76);
+            color: var(--muted);
+            font-size: 0.77rem;
+            text-align: center;
+        }
+
+        .disclaimer {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin: 25px 0 43px;
+            padding: 17px 18px;
+            border: 1px solid rgba(249, 221, 163, 0.90);
+            border-radius: 11px;
+            background: rgba(255, 247, 229, 0.78);
+            color: #77510A;
+            font-size: 0.84rem;
+            box-shadow: 0 8px 20px rgba(124, 82, 5, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .disclaimer-icon {
+            width: 25px;
+            height: 25px;
+            flex: 0 0 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #FFE5A8;
+            color: #805600;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .disclaimer p {
+            margin: 0;
+        }
+
+        .footer {
+            padding: 23px 0 29px;
+            border-top: 1px solid rgba(205, 220, 230, 0.68);
+            background: rgba(255, 255, 255, 0.38);
+            color: var(--muted);
+            font-size: 0.81rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .footer strong {
+            color: var(--navy);
+        }
+
+        @supports not (backdrop-filter: blur(10px)) {
+            .navbar,
+            .footer {
+                background: rgba(255, 255, 255, 0.78);
+            }
+
+            .panel,
+            .method-card,
+            .frames-card {
+                background: rgba(255, 255, 255, 0.86);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .frames-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 860px) {
+            .results-layout {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .pipeline-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .frames-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                gap: 7px;
+                padding: 17px;
+            }
+
+            .frames-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 18px;
+            }
+
+            .frames-note {
+                padding: 12px 17px 15px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 28px, 1120px);
+            }
+
+            .navbar-content {
+                min-height: 64px;
+            }
+
+            .back-link {
+                font-size: 0;
+            }
+
+            .back-link::before {
+                content: "←";
+                font-size: 1.25rem;
+            }
+
+            .page-header {
+                padding: 36px 0 23px;
+            }
+
+            .panel-header,
+            .panel-body,
+            .method-card-inner {
+                padding: 19px;
+            }
+
+            .status-card {
+                padding: 20px;
+            }
+
+            .pipeline-list {
+                grid-template-columns: 1fr;
+            }
+
+            .file-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .file-row strong {
+                width: 100%;
+                max-width: 100%;
+                text-align: left;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+            }
+
+            .action-row {
+                flex-direction: column;
+                padding-bottom: 0;
+            }
+
+            .action-row .button {
+                width: 100%;
+            }
+
+            .footer-content {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .frames-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container navbar-content">
+            <a class="brand" href="{{ url_for('home') }}">
+                <span class="brand-mark">V</span>
+                <span class="brand-text">
+                    VerDeep
+                    <small>Deteksi ShortVideo Deepfake</small>
+                </span>
+            </a>
+
+            <a class="back-link" href="{{ url_for('index') }}">
+                ← Analisis Video Baru
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="container page-header">
+            <div class="breadcrumb">
+                <a href="{{ url_for('home') }}">Beranda</a>
+                <span>/</span>
+                <a href="{{ url_for('index') }}">Analisis Video</a>
+                <span>/</span>
+                <span>Hasil</span>
+            </div>
+
+            <h1>Hasil Analisis Video</h1>
+
+            <p>
+                Berikut adalah output prediksi dari pipeline VerDeep untuk video yang Anda unggah.
+                Interpretasikan skor sebagai indikator model, bukan kepastian absolut.
+            </p>
+        </section>
+
+        <section class="container results-layout">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Ringkasan Prediksi</h2>
+                    <p>Klasifikasi tingkat video dari model EfficientNetB0 + GRU.</p>
+                </div>
+
+                <div class="panel-body">
+                    <div class="status-card {{ result.result_class }}">
+                        <p class="result-kicker">
+                            <span class="result-dot"></span>
+                            Status Prediksi Model
+                        </p>
+
+                        <h2 class="result-label">{{ result.label }}</h2>
+
+                        {% if result.result_class == "deepfake" %}
+                            <p class="result-copy">
+                                Model mendeteksi indikasi bahwa video memiliki karakteristik yang
+                                lebih konsisten dengan kelas Deepfake.
+                            </p>
+                        {% else %}
+                            <p class="result-copy">
+                                Model menilai video lebih konsisten dengan kelas Real pada data dan
+                                pola yang telah dipelajarinya.
+                            </p>
+                        {% endif %}
+
+                        <div class="score-grid">
+                            <div class="score-box">
+                                <span>Skor Deepfake</span>
+                                <strong id="deepfakePercent">Memuat...</strong>
+                            </div>
+
+                            <div class="score-box">
+                                <span>Skor Real</span>
+                                <strong id="realPercent">Memuat...</strong>
+                            </div>
+                        </div>
+
+                        <div class="score-section">
+                            <div class="score-heading">
+                                <span>Probabilitas kelas Deepfake</span>
+                                <strong id="rawScore">Memuat...</strong>
+                            </div>
+
+                            <div class="progress-track"
+                                 id="progressTrack"
+                                 role="progressbar"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="0"
+                                 aria-label="Skor Deepfake">
+                                <div class="progress-value" id="progressValue"></div>
+                            </div>
+
+                            <div class="score-scale">
+                                <span>0% — Real</span>
+                                <span>100% — Deepfake</span>
+                            </div>
+                        </div>
+
+                        <div class="interpretation">
+                            <span class="interpretation-icon">i</span>
+                            <span>
+                                Label ditentukan dari ambang klasifikasi 0,50. Nilai yang mendekati
+                                ambang tersebut perlu ditinjau lebih hati-hati dengan bukti tambahan.
+                            </span>
+                        </div>
+
+                        <div class="action-row">
+                            <a class="button button-primary" href="{{ url_for('index') }}">
+                                Analisis Video Lain
+                            </a>
+
+                            <a class="button button-secondary" href="{{ url_for('home') }}">
+                                Kembali ke Beranda
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="panel">
+                <div class="panel-header">
+                    <h2>Video yang Dianalisis</h2>
+                    <p>Gunakan pratinjau ini untuk memastikan file yang diproses.</p>
+                </div>
+
+                <div class="panel-body">
+                    <div class="video-shell">
+                        <video controls preload="metadata">
+                            <source src="{{ url_for('static', filename=video_url) }}" type="video/mp4">
+                            Browser Anda tidak mendukung pemutaran video HTML5.
+                        </video>
+                    </div>
+
+                    <div class="file-information">
+                        <div class="file-row">
+                            <span>Nama file</span>
+                            <strong title="{{ video_filename }}">{{ video_filename }}</strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Total frame video</span>
+                            <strong>{{ video_info.total_frames | default(0) }} frame</strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Frame yang dianalisis</span>
+                            <strong>
+                                {{ result.frame_count }} dari
+                                {{ video_info.total_frames | default(0) }} frame
+                            </strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Waktu prediksi</span>
+                            <strong>{{ processing_time }} detik</strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Resolusi video</span>
+                            <strong>
+                                {{ video_info.width | default(0) }} ×
+                                {{ video_info.height | default(0) }} piksel
+                            </strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Frame rate</span>
+                            <strong>{{ video_info.fps | default(0) }} FPS</strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Ukuran input wajah</span>
+                            <strong>224 × 224 piksel</strong>
+                        </div>
+
+                        <div class="file-row">
+                            <span>Arsitektur prediksi</span>
+                            <strong>EfficientNetB0 + GRU (64 unit)</strong>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="container">
+            <div class="method-card">
+                <div class="method-card-inner">
+                    <h2>Ringkasan Pipeline yang Digunakan</h2>
+                    <p>Setiap video diproses secara berurutan sebelum skor prediksi dibuat.</p>
+
+                    <div class="pipeline-list">
+                        <div class="pipeline-item">
+                            <span>TAHAP 01</span>
+                            <strong>Validasi Video</strong>
+                        </div>
+
+                        <div class="pipeline-item">
+                            <span>TAHAP 02</span>
+                            <strong>Deteksi Wajah MTCNN</strong>
+                        </div>
+
+                        <div class="pipeline-item">
+                            <span>TAHAP 03</span>
+                            <strong>Fitur EfficientNetB0</strong>
+                        </div>
+
+                        <div class="pipeline-item">
+                            <span>TAHAP 04</span>
+                            <strong>Urutan Temporal GRU</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="frames-card">
+                <div class="frames-card-header">
+                    <div>
+                        <h2>60 Frame yang Dianalisis</h2>
+                        <p>
+                            Angka pada setiap gambar menunjukkan indeks frame asli yang dipilih
+                            secara merata dari awal hingga akhir video.
+                        </p>
+                    </div>
+
+                    <span class="frames-count">
+                        {{ analyzed_frames | length }} / 60 frame
+                    </span>
+                </div>
+
+                {% if analyzed_frames %}
+                    <div class="frames-grid">
+                        {% for frame in analyzed_frames %}
+                            <div class="frame-item">
+                                <img
+                                    src="{{ url_for('static', filename=frame.url) }}"
+                                    alt="Frame sumber {{ frame.source_frame }}"
+                                    loading="lazy"
+                                >
+                                <span class="frame-number">
+                                    {{ frame.source_frame }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <p class="frames-note">
+                        Angka menunjukkan indeks frame pada video sumber. Frame dipilih secara
+                        merata untuk membentuk urutan temporal 60 frame yang dianalisis model.
+                    </p>
+                {% else %}
+                    <div class="frames-empty">
+                        Pratinjau frame wajah belum tersedia untuk analisis ini.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="disclaimer">
+                <span class="disclaimer-icon">!</span>
+                <p>
+                    <strong>Batasan hasil:</strong> keluaran ini adalah prediksi probabilitas dari model
+                    pembelajaran mesin. Nilai tersebut tidak membuktikan secara final bahwa suatu video
+                    asli atau dimanipulasi. Untuk kebutuhan hukum, jurnalistik, keamanan, atau investigasi,
+                    lakukan verifikasi sumber, metadata, konteks publikasi, dan pemeriksaan oleh ahli
+                    forensik digital.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div><strong>VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRUan deteksi deepfake berbasis CNN–GRU.</div>
+        </div>
+    </footer>
+
+    <script>
+        const rawDeepfakeScore = "{{ result.score }}";
+        let deepfakeScore = Number(rawDeepfakeScore);
+
+        if (!Number.isFinite(deepfakeScore)) {
+            deepfakeScore = 0;
+        }
+
+        deepfakeScore = Math.min(Math.max(deepfakeScore, 0), 1);
+
+        const deepfakePercent = deepfakeScore * 100;
+        const realPercent = (1 - deepfakeScore) * 100;
+
+        document.getElementById("deepfakePercent").textContent =
+            deepfakePercent.toFixed(2) + "%";
+
+        document.getElementById("realPercent").textContent =
+            realPercent.toFixed(2) + "%";
+
+        document.getElementById("rawScore").textContent =
+            deepfakeScore.toFixed(4);
+
+        document.getElementById("progressValue").style.width =
+            deepfakePercent.toFixed(2) + "%";
+
+        document.getElementById("progressTrack").setAttribute(
+            "aria-valuenow",
+            deepfakePercent.toFixed(2)
+        );
+    </script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ error_title | default("Terjadi Kesalahan") }} | VerDeep</title>
+
+    <style>
+        :root {
+            --navy: #102A43;
+            --navy-dark: #081D2D;
+            --teal: #0F9D8A;
+            --teal-dark: #087B6C;
+            --coral: #E05252;
+            --coral-dark: #B83939;
+            --amber: #F59E0B;
+            --background: #F5F8FA;
+            --white: #FFFFFF;
+            --text: #243B53;
+            --muted: #627D98;
+            --border: #D9E2EC;
+            --soft-coral: #FDECEC;
+            --soft-amber: #FFF7E5;
+            --shadow: 0 18px 42px rgba(16, 42, 67, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            background:
+                radial-gradient(
+                    circle at 90% 5%,
+                    rgba(224, 82, 82, 0.09),
+                    transparent 25%
+                ),
+                var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(1050px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .navbar {
+            flex: 0 0 auto;
+            border-bottom: 1px solid var(--border);
+            background: var(--white);
+        }
+
+        .navbar-content {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--navy);
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--navy);
+            color: var(--white);
+            font-size: 1.05rem;
+            box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
+        }
+
+        .brand-text small {
+            display: block;
+            margin-top: 1px;
+            color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            color: var(--navy);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .nav-link:hover {
+            color: var(--teal);
+        }
+
+        /*
+            Main mengambil seluruh tinggi tersisa antara navbar dan footer.
+            Card kemudian diposisikan tepat di tengah area tersebut.
+        */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        main > .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-card {
+            width: min(680px, 100%);
+            overflow: hidden;
+            margin: 0;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .error-top {
+            padding: 36px 42px 30px;
+            border-bottom: 1px solid #F2C7C7;
+            background:
+                radial-gradient(
+                    circle at 94% 5%,
+                    rgba(224, 82, 82, 0.16),
+                    transparent 25%
+                ),
+                var(--soft-coral);
+            text-align: center;
+        }
+
+        .error-icon-wrap {
+            width: 74px;
+            height: 74px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 17px;
+            border: 7px solid rgba(224, 82, 82, 0.14);
+            border-radius: 50%;
+            background: var(--white);
+            color: var(--coral-dark);
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .error-top h1 {
+            margin: 0;
+            color: var(--navy);
+            font-size: clamp(1.65rem, 4vw, 2.15rem);
+            letter-spacing: -0.6px;
+        }
+
+        .error-top p {
+            max-width: 510px;
+            margin: 11px auto 0;
+            color: #734141;
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        .error-content {
+            padding: 28px 42px 35px;
+        }
+
+        .detail-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 15px;
+            border: 1px solid #F9DDA3;
+            border-radius: 10px;
+            background: var(--soft-amber);
+            color: #77510A;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+
+        .detail-symbol {
+            width: 23px;
+            height: 23px;
+            flex: 0 0 23px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #FFE4A2;
+            color: #805600;
+            font-size: 0.76rem;
+            font-weight: 800;
+        }
+
+        .detail-box p {
+            margin: 1px 0 0;
+        }
+
+        .tips {
+            margin-top: 23px;
+        }
+
+        .tips h2 {
+            margin: 0 0 12px;
+            color: var(--navy);
+            font-size: 1rem;
+        }
+
+        .tips ul {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tips li {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            color: var(--muted);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        .tips li::before {
+            content: "✓";
+            width: 21px;
+            height: 21px;
+            flex: 0 0 21px;
+            display: grid;
+            place-items: center;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: #E5F7F3;
+            color: var(--teal-dark);
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 29px;
+        }
+
+        .button {
+            min-height: 45px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 18px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        .button-primary:hover {
+            background: var(--teal-dark);
+        }
+
+        .button-secondary {
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--navy);
+        }
+
+        .button-secondary:hover {
+            background: #F3F7F9;
+        }
+
+        .footer {
+            flex: 0 0 auto;
+            margin-top: auto;
+            padding: 24px 0 29px;
+            border-top: 1px solid var(--border);
+            background: var(--white);
+            color: var(--muted);
+            font-size: 0.81rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .footer strong {
+            color: var(--navy);
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 28px, 1050px);
+            }
+
+            .navbar-content {
+                min-height: 64px;
+            }
+
+            .nav-link {
+                font-size: 0;
+            }
+
+            .nav-link::before {
+                content: "←";
+                font-size: 1.25rem;
+            }
+
+            main {
+                align-items: flex-start;
+                padding: 32px 0;
+            }
+
+            .error-top,
+            .error-content {
+                padding-right: 22px;
+                padding-left: 22px;
+            }
+
+            .error-top {
+                padding-top: 29px;
+            }
+
+            .button-row {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .footer-content {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container navbar-content">
+            <a class="brand" href="{{ url_for('home') }}">
+                <span class="brand-mark">V</span>
+                <span class="brand-text">
+                    VerDeep
+                    <small>Deteksi ShortVideo Deepfake</small>
+                </span>
+            </a>
+
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="error-card">
+                <div class="error-top">
+                    <div class="error-icon-wrap">
+                        {{ error_icon | default("!") }}
+                    </div>
+
+                    <h1>{{ error_title | default("Video Tidak Dapat Diproses") }}</h1>
+
+                    <p>
+                        VerDeep tidak dapat melanjutkan analisis untuk file yang dikirim.
+                        Periksa detail berikut lalu coba kembali.
+                    </p>
+                </div>
+
+                <div class="error-content">
+                    <div class="detail-box">
+                        <span class="detail-symbol">i</span>
+                        <p>
+                            {{ error_message | default("Terjadi kesalahan saat memproses video.") }}
+                            {% if error_description %}
+                                {{ error_description }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="tips">
+                        <h2>Yang dapat Anda coba</h2>
+
+                        <ul>
+                            <li>Pastikan file video dapat diputar dengan normal pada perangkat Anda.</li>
+                            <li>Gunakan video MP4 dengan durasi maksimal 30 detik.</li>
+                            <li>Pastikan resolusi video tidak lebih dari 1920 × 1080 piksel.</li>
+                            <li>Gunakan video yang memuat wajah manusia dengan cukup jelas dan terlihat.</li>
+                            <li>Pilih ulang file lalu jalankan analisis sekali lagi.</li>
+                        </ul>
+                    </div>
+
+                    <div class="button-row">
+                        <a class="button button-primary" href="{{ url_for('index') }}">
+                            Unggah Video Lagi
+                        </a>
+
+                        <a class="button button-secondary" href="{{ url_for('home') }}">
+                            Kembali ke Beranda
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div><strong>VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRUan deteksi deepfake berbasis CNN–GRU.</div>
+        </div>
+    </footer>
+</body>
+</html>

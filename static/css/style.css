@@ -1,0 +1,159 @@
+
+.result-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+}
+
+.result-left-column,
+.result-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+    align-self: start;
+}
+
+.prediction-card,
+.metadata-card,
+.pipeline-card {
+    height: auto;
+    min-height: 0;
+    margin: 0;
+}
+
+/* Pastikan kartu kiri tidak dipaksa setinggi metadata kanan */
+.prediction-card {
+    align-self: start;
+}
+
+/* Kartu pipeline langsung berada setelah hasil prediksi */
+.pipeline-card {
+    width: 100%;
+    padding: 28px 24px;
+    border: 1px solid #dce5ed;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(28, 56, 81, 0.07);
+}
+
+.pipeline-header {
+    margin-bottom: 20px;
+}
+
+.pipeline-header h2 {
+    margin: 0 0 8px;
+    color: #17324d;
+    font-size: 1.15rem;
+    line-height: 1.35;
+}
+
+.pipeline-header p {
+    margin: 0;
+    color: #6b8192;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.pipeline-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid #d9e4ec;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.pipeline-step {
+    min-height: 126px;
+    padding: 18px 14px;
+    border-right: 1px solid #d9e4ec;
+    border-bottom: 1px solid #d9e4ec;
+    background: #ffffff;
+}
+
+.pipeline-step:nth-child(2n) {
+    border-right: 0;
+}
+
+.pipeline-step:nth-child(n + 3) {
+    border-bottom: 0;
+}
+
+.step-number {
+    display: block;
+    margin-bottom: 8px;
+    color: #0d8d83;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+}
+
+.pipeline-step h3 {
+    margin: 0 0 7px;
+    color: #17324d;
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.pipeline-step p {
+    margin: 0;
+    color: #6b8192;
+    font-size: 0.8rem;
+    line-height: 1.55;
+}
+
+/* Hindari semua pemaksaan tinggi pada area hasil */
+.result-layout,
+.result-left-column,
+.result-right-column,
+.prediction-card,
+.metadata-card,
+.pipeline-card {
+    min-height: 0;
+}
+
+/* Tampilan tablet dan ponsel: menjadi satu kolom */
+@media (max-width: 900px) {
+    .result-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .pipeline-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pipeline-step,
+    .pipeline-step:nth-child(2n),
+    .pipeline-step:nth-child(n + 3) {
+        border-right: 0;
+        border-bottom: 1px solid #d9e4ec;
+    }
+
+    .pipeline-step:last-child {
+        border-bottom: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .result-layout {
+        gap: 16px;
+    }
+
+    .result-left-column,
+    .result-right-column {
+        gap: 16px;
+    }
+
+    .pipeline-card {
+        padding: 22px 16px;
+        border-radius: 14px;
+    }
+
+    .pipeline-step {
+        min-height: 0;
+        padding: 16px;
+    }
+}
