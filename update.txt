@@ -1,0 +1,13 @@
+cd D:\folder_web
+
+git add .
+git commit -m "update css"
+git push
+
+login ssh indra@38.147.122.4
+
+cd ~/skripsi-project
+git pull
+docker build -t skripsi-project .
+docker stop skripsi && docker rm skripsi
+docker run -d -p 80:5000 --restart always --name skripsi skripsi-project
