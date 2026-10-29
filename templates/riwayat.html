@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat - VerDeep</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FCD34D',
+                            dark: '#1C1C1E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base styling and background */
+        body {
+            background-image: url('https://plus.unsplash.com/premium_photo-1789628175586-8f5b33fbfb6b?w=300&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #1C1C1E;
+        }
+
+        /* Background overlay */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(230, 220, 210, 0.4);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: -1;
+        }
+
+        /* Glassmorphism Panel Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animasi Kemunculan Panel */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        /* Scrollbar kustom untuk tabel */
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(28, 28, 30, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(28, 28, 30, 0.4); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-6 font-sans">
+    
+    <div class="bg-overlay"></div>
+
+    <div class="max-w-[1120px] mx-auto w-full flex-1 flex flex-col">
+        
+        <!-- Top Navigation -->
+        <nav class="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
+            <!-- Brand / Logo -->
+            <a href="{{ url_for('home') }}" class="flex items-center gap-3 glass-panel px-5 py-3 rounded-full hover:bg-white/60 transition-colors">
+                <div class="w-10 h-10 bg-brand-dark rounded-xl flex items-center justify-center text-brand-yellow font-bold text-xl shadow-md">
+                    V
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-lg tracking-tight leading-none mb-1">VerDeep</span>
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest leading-none">Deteksi ShortVideo</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <div class="flex items-center gap-1 glass-panel p-1.5 rounded-full overflow-x-auto max-w-full">
+                <a href="{{ url_for('home') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Beranda</a>
+                <!-- Link Aktif -->
+                 <a href="{{ url_for('index') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Analisis</a>
+                <a href="{{ url_for('riwayat') }}" class="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-semibold shadow-md whitespace-nowrap">Riwayat</a>
+                <a href="{{ url_for('arsitektur') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Arsitektur</a>
+                <a href="{{ url_for('kontak') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Kontak</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col w-full">
+            
+            <div class="mb-10 text-center md:text-left">
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-brand-dark mb-2">Riwayat Analisis</h1>
+                <p class="text-brand-dark/70 font-medium">Daftar video yang telah diproses oleh pipeline VerDeep.</p>
+            </div>
+
+            <!-- Tabel Glass Panel -->
+            <section class="glass-panel rounded-[2.5rem] p-6 md:p-10 w-full animate-fade-up overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="border-b border-brand-dark/10 text-xs md:text-sm font-bold text-brand-dark/60 uppercase tracking-wide">
+                                <th class="p-4 whitespace-nowrap">Waktu</th>
+                                <th class="p-4">Nama Video</th>
+                                <th class="p-4">Hasil Deteksi</th>
+                                <th class="p-4 text-center">Skor Model</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-dark/5 text-brand-dark text-sm font-medium">
+                            {% if riwayat %}
+                                {% for item in riwayat %}
+                                <tr class="hover:bg-white/30 transition-colors">
+                                    <td class="p-4 whitespace-nowrap text-brand-dark/60">{{ item.waktu }}</td>
+                                    <td class="p-4 font-bold">{{ item.nama_file }}</td>
+                                    <td class="p-4">
+                                        {% if 'Palsu' in item.hasil %}
+                                        <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-full text-xs font-bold">
+                                            <i class="ph-fill ph-warning-circle text-sm"></i>
+                                            {{ item.hasil }}
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
+                                            <i class="ph-fill ph-check-circle text-sm"></i>
+                                            {{ item.hasil }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="p-4 font-bold text-center">{{ item.skor }}</td>
+                                    <td class="p-4 text-center">
+                                        <form action="{{ url_for('hapus_riwayat', index=loop.index0) }}" method="POST" class="delete-form m-0 inline-block" data-filename="{{ item.nama_file }}">
+                                            <button type="button" class="border border-red-500 text-red-600 hover:bg-red-500 hover:text-white px-4 py-1.5 rounded-full text-xs font-bold transition-colors" onclick="showModal(this)">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="p-16 text-center">
+                                        <div class="flex flex-col items-center justify-center gap-3 opacity-50">
+                                            <i class="ph-duotone ph-folder-open text-5xl"></i>
+                                            <p class="font-semibold">Belum ada riwayat analisis video.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 py-6 border-t border-white/40 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-brand-dark/60">
+            <div><strong class="text-brand-dark font-bold">VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRU.</div>
+        </footer>
+        
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="customModal" class="fixed inset-0 z-[9999] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-brand-dark/40 backdrop-blur-sm p-4">
+        <div class="glass-panel rounded-[2.5rem] p-8 md:p-10 max-w-md w-full text-center transform scale-95 transition-transform duration-300 bg-white/80" id="modalBox">
+            
+            <div class="w-16 h-16 mx-auto bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mb-6 shadow-sm">
+                <i class="ph-fill ph-trash"></i>
+            </div>
+            
+            <h3 class="text-2xl font-extrabold text-brand-dark mb-3">Hapus Riwayat</h3>
+            <p class="text-brand-dark/70 text-sm font-medium mb-8 leading-relaxed">
+                Yakin ingin menghapus log analisis untuk video <br>
+                <strong id="modalFileName" class="text-brand-dark font-bold block mt-1"></strong>
+                Data yang dihapus tidak dapat dikembalikan.
+            </p>
+            
+            <div class="flex gap-3">
+                <button class="flex-1 py-3 px-4 rounded-full border border-brand-dark/20 text-brand-dark font-bold hover:bg-black/5 transition-colors text-sm" onclick="closeModal()">Batal</button>
+                <button class="flex-1 py-3 px-4 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-md text-sm" onclick="confirmDelete()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika Modal -->
+    <script>
+        let currentForm = null;
+        const modal = document.getElementById('customModal');
+        const modalBox = document.getElementById('modalBox');
+        const modalFileName = document.getElementById('modalFileName');
+
+        function showModal(buttonElement) {
+            currentForm = buttonElement.closest('.delete-form');
+            const filename = currentForm.getAttribute('data-filename');
+            modalFileName.textContent = filename;
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalBox.classList.remove('scale-95');
+            modalBox.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            
+            setTimeout(() => { currentForm = null; }, 300);
+        }
+
+        function confirmDelete() {
+            if (currentForm) {
+                currentForm.submit();
+            }
+        }
+    </script>
+</body>
+</html>

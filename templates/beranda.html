@@ -3,930 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VerDeep | Verifikasi Deepfake</title>
+    <title>Beranda - VerDeep</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FCD34D',
+                            dark: '#1C1C1E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        :root {
-            --navy: #102A43;
-            --navy-dark: #081D2D;
-            --teal: #0F9D8A;
-            --teal-dark: #087B6C;
-            --coral: #E05252;
-            --amber: #F59E0B;
-            --background: #F5F8FA;
-            --white: #FFFFFF;
-            --text: #243B53;
-            --muted: #627D98;
-            --border: #D9E2EC;
-            --soft-teal: #E5F7F3;
-            --soft-coral: #FDECEC;
-            --shadow: 0 16px 36px rgba(16, 42, 67, 0.10);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* Base styling and background */
         body {
-            margin: 0;
-            background: var(--background);
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-            line-height: 1.6;
+            background-image: url('https://plus.unsplash.com/premium_photo-1789628175586-8f5b33fbfb6b?w=300&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #1C1C1E;
         }
 
-        a {
-            text-decoration: none;
+        /* Background overlay */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.11);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: -1;
         }
 
-        .container {
-            width: min(1120px, calc(100% - 40px));
-            margin: 0 auto;
+        /* Glassmorphism Panel Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-        .navbar {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        .glass-panel-inner {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .navbar-content {
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
+        /* Animasi Kemunculan Panel */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.5s ease-out forwards;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--navy);
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: -0.3px;
-        }
-
-        .brand-mark {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 11px;
-            background: var(--navy);
-            color: var(--white);
-            font-size: 1.05rem;
-            box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
-        }
-
-        .brand-text small {
-            display: block;
-            margin-top: 1px;
-            color: var(--muted);
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-        }
-
-        .nav-link {
-            color: var(--navy);
-            font-size: 0.93rem;
-            font-weight: 700;
-        }
-
-        .nav-link:hover {
-            color: var(--teal);
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: 84px 0 72px;
-            background:
-                radial-gradient(circle at 84% 18%, rgba(15, 157, 138, 0.18), transparent 28%),
-                radial-gradient(circle at 18% 95%, rgba(15, 157, 138, 0.10), transparent 30%),
-                linear-gradient(135deg, #102A43 0%, #173E59 56%, #102A43 100%);
-            color: var(--white);
-        }
-
-        .hero::before,
-        .hero::after {
+        /* Pipeline line connect */
+        .pipeline-line::after {
             content: "";
             position: absolute;
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .hero::before {
-            width: 390px;
-            height: 390px;
-            top: -220px;
-            right: -80px;
-        }
-
-        .hero::after {
-            width: 250px;
-            height: 250px;
-            bottom: -155px;
-            left: 33%;
-        }
-
-        .hero-grid {
-            position: relative;
-            z-index: 1;
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            align-items: center;
-            gap: 56px;
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
-            color: #D9FFFA;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.35px;
-            text-transform: uppercase;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4BE3CA;
-            box-shadow: 0 0 0 4px rgba(75, 227, 202, 0.16);
-        }
-
-        h1 {
-            margin: 19px 0 18px;
-            max-width: 680px;
-            font-size: clamp(2.25rem, 5vw, 4.25rem);
-            line-height: 1.08;
-            letter-spacing: -1.7px;
-        }
-
-        .hero p {
-            max-width: 640px;
-            margin: 0;
-            color: #D9E8F2;
-            font-size: 1.05rem;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 30px;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 46px;
-            padding: 0 19px;
-            border-radius: 9px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-        }
-
-        .button-primary {
-            background: var(--teal);
-            color: var(--white);
-            box-shadow: 0 10px 22px rgba(15, 157, 138, 0.25);
-        }
-
-        .button-primary:hover {
-            background: var(--teal-dark);
-        }
-
-        .button-secondary {
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--white);
-        }
-
-        .button-secondary:hover {
-            background: rgba(255, 255, 255, 0.16);
-        }
-
-        .hero-note {
-            display: flex;
-            gap: 9px;
-            align-items: flex-start;
-            margin-top: 22px;
-            color: #BFD4E4;
-            font-size: 0.82rem;
-        }
-
-        .hero-note span {
-            color: #5DE6D1;
-            font-size: 1rem;
-            line-height: 1.25;
-        }
-
-        .forensic-card {
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.10);
-            box-shadow: 0 22px 60px rgba(5, 22, 34, 0.26);
-            backdrop-filter: blur(8px);
-            overflow: hidden;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 17px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .card-header strong {
-            font-size: 0.92rem;
-        }
-
-        .card-live {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #B5FFF4;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .card-live i {
-            width: 7px;
-            height: 7px;
-            display: block;
-            border-radius: 50%;
-            background: #4BE3CA;
-        }
-
-        .pipeline {
-            padding: 22px 20px 16px;
-        }
-
-        .pipeline-step {
-            display: grid;
-            grid-template-columns: 38px 1fr;
-            gap: 13px;
-            position: relative;
-            padding-bottom: 18px;
-        }
-
-        .pipeline-step:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            width: 1px;
-            left: 18px;
-            top: 39px;
+            width: 2px;
+            left: 20px;
+            top: 40px;
             bottom: 0;
-            background: rgba(165, 222, 215, 0.38);
+            background: rgba(28, 28, 30, 0.1);
         }
-
-        .step-number {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: rgba(75, 227, 202, 0.14);
-            border: 1px solid rgba(75, 227, 202, 0.35);
-            color: #A8FFF2;
-            font-size: 0.8rem;
-            font-weight: 800;
-        }
-
-        .step-content strong {
-            display: block;
-            margin-top: 1px;
-            font-size: 0.91rem;
-        }
-
-        .step-content span {
-            display: block;
-            margin-top: 2px;
-            color: #C2D7E6;
-            font-size: 0.78rem;
-            line-height: 1.4;
-        }
-
-        .card-footer {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .card-stat {
-            padding: 15px 11px;
-            background: rgba(7, 29, 45, 0.22);
-            text-align: center;
-        }
-
-        .card-stat strong {
-            display: block;
-            color: #B8FFF5;
-            font-size: 0.94rem;
-        }
-
-        .card-stat span {
-            display: block;
-            margin-top: 3px;
-            color: #BED0DE;
-            font-size: 0.69rem;
-        }
-
-        .section {
-            padding: 78px 0;
-        }
-
-        .section-heading {
-            max-width: 720px;
-            margin-bottom: 34px;
-        }
-
-        .section-kicker {
-            margin: 0 0 8px;
-            color: var(--teal-dark);
-            font-size: 0.79rem;
-            font-weight: 800;
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-        }
-
-        h2 {
-            margin: 0;
-            color: var(--navy);
-            font-size: clamp(1.7rem, 3vw, 2.4rem);
-            line-height: 1.2;
-            letter-spacing: -0.6px;
-        }
-
-        .section-heading > p:last-child {
-            margin: 13px 0 0;
-            color: var(--muted);
-            font-size: 0.98rem;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .feature-card {
-            padding: 25px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: var(--white);
-            box-shadow: 0 8px 20px rgba(16, 42, 67, 0.04);
-        }
-
-        .feature-icon {
-            width: 46px;
-            height: 46px;
-            display: grid;
-            place-items: center;
-            margin-bottom: 17px;
-            border-radius: 12px;
-            background: var(--soft-teal);
-            color: var(--teal-dark);
-            font-size: 1.35rem;
-        }
-
-        .feature-card:nth-child(2) .feature-icon {
-            background: #EAF2FF;
-            color: #356AA0;
-        }
-
-        .feature-card:nth-child(3) .feature-icon {
-            background: #FFF5DF;
-            color: #B97400;
-        }
-
-        .feature-card h3 {
-            margin: 0 0 9px;
-            color: var(--navy);
-            font-size: 1.05rem;
-        }
-
-        .feature-card p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.91rem;
-        }
-
-        .method-section {
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            background: var(--white);
-        }
-
-        .method-grid {
-            display: grid;
-            grid-template-columns: 0.9fr 1.1fr;
-            gap: 50px;
-            align-items: center;
-        }
-
-        .method-copy > p {
-            color: var(--muted);
-            margin: 15px 0 0;
-        }
-
-        .method-list {
-            display: grid;
-            gap: 13px;
-            margin-top: 24px;
-        }
-
-        .method-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .check {
-            width: 22px;
-            height: 22px;
-            flex: 0 0 22px;
-            display: grid;
-            place-items: center;
-            margin-top: 1px;
-            border-radius: 50%;
-            background: var(--soft-teal);
-            color: var(--teal-dark);
-            font-size: 0.76rem;
-            font-weight: 900;
-        }
-
-        .method-item p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.91rem;
-        }
-
-        .method-item strong {
-            color: var(--text);
-        }
-
-        .specification {
-            padding: 26px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            background: var(--background);
-        }
-
-        .specification h3 {
-            margin: 0 0 18px;
-            color: var(--navy);
-            font-size: 1.05rem;
-        }
-
-        .spec-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 22px;
-            padding: 13px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.89rem;
-        }
-
-        .spec-row:last-child {
-            padding-bottom: 0;
-            border-bottom: 0;
-        }
-
-        .spec-row span {
-            color: var(--muted);
-        }
-
-        .spec-row strong {
-            color: var(--navy);
-            text-align: right;
-        }
-
-        .notice {
-            margin-top: 23px;
-            padding: 15px 17px;
-            border: 1px solid #F9DDA3;
-            border-radius: 10px;
-            background: #FFF8E8;
-            color: #77510A;
-            font-size: 0.84rem;
-        }
-
-        .notice strong {
-            color: #845800;
-        }
-
-        .cta {
-            padding: 74px 0;
-        }
-
-        .cta-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 30px;
-            padding: 37px 40px;
-            border-radius: 18px;
-            background:
-                radial-gradient(circle at 100% 0, rgba(75, 227, 202, 0.20), transparent 32%),
-                var(--navy);
-            color: var(--white);
-            box-shadow: var(--shadow);
-        }
-
-        .cta-box h2 {
-            color: var(--white);
-            font-size: clamp(1.45rem, 3vw, 2rem);
-        }
-
-        .cta-box p {
-            margin: 9px 0 0;
-            color: #C6D8E5;
-            font-size: 0.93rem;
-        }
-
-        .footer {
-            padding: 24px 0 30px;
-            border-top: 1px solid var(--border);
-            color: var(--muted);
-            font-size: 0.82rem;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            gap: 14px;
-        }
-
-        .footer strong {
-            color: var(--navy);
-        }
-
-        @media (max-width: 860px) {
-            .hero {
-                padding: 66px 0 58px;
-            }
-
-            .hero-grid,
-            .method-grid {
-                grid-template-columns: 1fr;
-                gap: 36px;
-            }
-
-            .forensic-card {
-                max-width: 560px;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .cta-box {
-                align-items: flex-start;
-                flex-direction: column;
-                padding: 30px;
-            }
-        }
-
-        @media (max-width: 560px) {
-            .container {
-                width: min(100% - 28px, 1120px);
-            }
-
-            .navbar-content {
-                min-height: 64px;
-            }
-
-            .nav-link {
-                display: none;
-            }
-
-            .hero {
-                padding: 54px 0 48px;
-            }
-
-            h1 {
-                font-size: 2.28rem;
-                letter-spacing: -1px;
-            }
-
-            .hero p {
-                font-size: 0.96rem;
-            }
-
-            .button {
-                width: 100%;
-            }
-
-            .hero-actions {
-                display: grid;
-                grid-template-columns: 1fr;
-            }
-
-            .card-footer {
-                grid-template-columns: 1fr;
-            }
-
-            .card-stat {
-                padding: 11px;
-            }
-
-            .section {
-                padding: 58px 0;
-            }
-
-            .specification {
-                padding: 20px;
-            }
-
-            .spec-row {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 4px;
-            }
-
-            .spec-row strong {
-                text-align: left;
-            }
-
-            .footer-content {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+        .pipeline-item:last-child .pipeline-line::after {
+            display: none;
         }
     </style>
 </head>
+<body class="min-h-screen flex flex-col p-4 md:p-6 font-sans">
+    
+    <div class="bg-overlay"></div>
 
-<body>
-    <header class="navbar">
-        <div class="container navbar-content">
-            <a class="brand" href="{{ url_for('home') }}">
-                <span class="brand-mark">V</span>
-                <span class="brand-text">
-                    VerDeep
-                    <small>Deteksi ShortVideo Deepfake</small>
-                </span>
+    <div class="max-w-[1120px] mx-auto w-full flex-1 flex flex-col">
+        
+        <!-- Top Navigation -->
+        <nav class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 md:mb-12">
+            <a href="{{ url_for('home') }}" class="flex items-center gap-3 glass-panel px-5 py-3 rounded-full hover:bg-white/60 transition-colors">
+                <div class="w-10 h-10 bg-brand-dark rounded-xl flex items-center justify-center text-brand-yellow font-bold text-xl shadow-md">
+                    V
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-lg tracking-tight leading-none mb-1">VerDeep</span>
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest leading-none">Deteksi ShortVideo</span>
+                </div>
             </a>
 
-        </div>
-    </header>
+            <div class="flex items-center gap-1 glass-panel p-1.5 rounded-full overflow-x-auto max-w-full">
+                <a href="{{ url_for('arsitektur') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Arsitektur</a>
+                <a href="{{ url_for('kontak') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Kontak</a>
+            </div>
+        </nav>
 
-    <main>
-        <section class="hero">
-            <div class="container hero-grid">
-                <div>
-                    <div class="eyebrow">
-                        <span class="status-dot"></span>
-                        Sistem Analisis ShortVideo Berbasis Deep Learning
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col w-full">
+            
+            <!-- Hero Section -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-16 animate-fade-up">
+                
+                <!-- Kiri: Hero Text -->
+                <div class="lg:col-span-7 flex flex-col items-center text-center lg:items-start lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 glass-panel-inner rounded-full mb-6 border-brand-dark/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-brand-dark uppercase tracking-widest">Sistem Analisis ShortVideo</span>
                     </div>
 
-                    <h1>Periksa integritas video dengan pendekatan forensik berbasis deep learning.</h1>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-brand-dark mb-6 leading-[1.1]">
+                        Periksa integritas video dengan forensik AI.
+                    </h1>
 
-                    <p>
-                        VerDeep membantu mengidentifikasi indikasi manipulasi wajah pada video
-                        melalui proses validasi, deteksi wajah MTCNN, ekstraksi fitur EfficientNetB0,
-                        dan analisis urutan temporal menggunakan GRU.
+                    <p class="text-brand-dark/70 font-medium text-base md:text-lg mb-8 max-w-2xl leading-relaxed">
+                        VerDeep mengidentifikasi indikasi manipulasi wajah pada video
+                        melalui validasi media, deteksi wajah, ekstraksi fitur spasial,
+                        dan analisis temporal menggunakan arsitektur hybrid.
                     </p>
 
-                    <div class="hero-actions">
-                        <a class="button button-primary" href="{{ url_for('index') }}">
-                            Mulai
+                    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <a href="{{ url_for('index') }}" class="inline-flex items-center justify-center px-8 py-4 bg-brand-dark text-brand-yellow font-bold rounded-2xl hover:bg-black transition-colors shadow-lg group">
+                            Mulai Analisis
+                            <i class="ph-bold ph-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                         </a>
-                        <a class="button button-secondary" href="#metode">
+                        <a href="#metode" class="inline-flex items-center justify-center px-8 py-4 glass-panel-inner border-brand-dark/20 text-brand-dark font-bold rounded-2xl hover:bg-white/50 transition-colors">
                             Lihat Metode
                         </a>
                     </div>
+                </div>
 
-                    <div class="hero-note">
-                        <span>ⓘ</span>
-                        <div>
-                            Hasil merupakan skor prediksi model dan tidak dapat digunakan sebagai
-                            bukti forensik final tanpa verifikasi ahli.
+                <!-- Kanan: Forensic Card -->
+                <div class="lg:col-span-5 glass-panel rounded-[2.5rem] flex flex-col overflow-hidden animate-fade-up" style="animation-delay: 0.1s;">
+                    <div class="px-6 md:px-8 py-5 border-b border-brand-dark/10 bg-white/30 flex justify-between items-center">
+                        <strong class="font-bold text-brand-dark">Pipeline Analisis</strong>
+                        <div class="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-100 px-3 py-1.5 rounded-full border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Ready
+                        </div>
+                    </div>
+
+                    <div class="p-6 md:px-8 py-6 flex-1">
+                        <div class="space-y-6">
+                            <div class="pipeline-item flex gap-4 relative pipeline-line">
+                                <div class="w-10 h-10 flex-shrink-0 bg-white text-brand-dark rounded-full flex items-center justify-center font-black shadow-sm text-sm border border-brand-dark/10 z-10">01</div>
+                                <div class="pb-6">
+                                    <strong class="block text-sm font-extrabold text-brand-dark">Input Video</strong>
+                                    <span class="block text-xs font-medium text-brand-dark/60 mt-1">Unggah video MP4 untuk diperiksa.</span>
+                                </div>
+                            </div>
+                            <div class="pipeline-item flex gap-4 relative pipeline-line">
+                                <div class="w-10 h-10 flex-shrink-0 bg-white text-brand-dark rounded-full flex items-center justify-center font-black shadow-sm text-sm border border-brand-dark/10 z-10">02</div>
+                                <div class="pb-6">
+                                    <strong class="block text-sm font-extrabold text-brand-dark">Validasi Media</strong>
+                                    <span class="block text-xs font-medium text-brand-dark/60 mt-1">Periksa format, resolusi, dan durasi.</span>
+                                </div>
+                            </div>
+                            <div class="pipeline-item flex gap-4 relative pipeline-line">
+                                <div class="w-10 h-10 flex-shrink-0 bg-white text-brand-dark rounded-full flex items-center justify-center font-black shadow-sm text-sm border border-brand-dark/10 z-10">03</div>
+                                <div class="pb-6">
+                                    <strong class="block text-sm font-extrabold text-brand-dark">Ekstraksi & Prediksi</strong>
+                                    <span class="block text-xs font-medium text-brand-dark/60 mt-1">CNN & GRU.</span>
+                                </div>
+                            </div>
+                            <div class="pipeline-item flex gap-4 relative pipeline-line">
+                                <div class="w-10 h-10 flex-shrink-0 bg-brand-yellow text-brand-dark rounded-full flex items-center justify-center font-black shadow-sm text-sm z-10">04</div>
+                                <div>
+                                    <strong class="block text-sm font-extrabold text-brand-dark">Skor Akhir</strong>
+                                    <span class="block text-xs font-medium text-brand-dark/60 mt-1">Indikasi klasifikasi probabilitas.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 border-t border-brand-dark/10 bg-white/20">
+                        <div class="p-4 text-center border-r border-brand-dark/10">
+                            <strong class="block text-brand-dark font-black text-lg">60</strong>
+                            <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest mt-1">Frame</span>
+                        </div>
+                        <div class="p-4 text-center border-r border-brand-dark/10">
+                            <strong class="block text-brand-dark font-black text-lg">224</strong>
+                            <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest mt-1">Dimensi</span>
+                        </div>
+                        <div class="p-4 text-center">
+                            <strong class="block text-brand-dark font-black text-lg">CNN-GRU</strong>
+                            <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest mt-1">Model</span>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <aside class="forensic-card" aria-label="Alur analisis VerDeep">
-                    <div class="card-header">
-                        <strong>Pipeline Analisis</strong>
-                        <span class="card-live"><i></i> READY</span>
-                    </div>
-
-                    <div class="pipeline">
-                        <div class="pipeline-step">
-                            <div class="step-number">01</div>
-                            <div class="step-content">
-                                <strong>Input Video</strong>
-                                <span>Unggah video MP4 untuk diperiksa.</span>
-                            </div>
-                        </div>
-
-                        <div class="pipeline-step">
-                            <div class="step-number">02</div>
-                            <div class="step-content">
-                                <strong>Validasi Media</strong>
-                                <span>Periksa format, resolusi, dan durasi video.</span>
-                            </div>
-                        </div>
-
-                        <div class="pipeline-step">
-                            <div class="step-number">03</div>
-                            <div class="step-content">
-                                <strong>Deteksi Wajah MTCNN</strong>
-                                <span>Lokalisasi area wajah pada frame video.</span>
-                            </div>
-                        </div>
-
-                        <div class="pipeline-step">
-                            <div class="step-number">04</div>
-                            <div class="step-content">
-                                <strong>EfficientNetB0 + GRU</strong>
-                                <span>Ekstraksi fitur visual dan pola temporal.</span>
-                            </div>
-                        </div>
-
-                        <div class="pipeline-step">
-                            <div class="step-number">05</div>
-                            <div class="step-content">
-                                <strong>Skor Deepfake</strong>
-                                <span>Prediksi indikasi video Real atau Deepfake.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="card-stat">
-                            <strong>60</strong>
-                            <span>Frame per video</span>
-                        </div>
-                        <div class="card-stat">
-                            <strong>224×224</strong>
-                            <span>Ukuran input</span>
-                        </div>
-                        <div class="card-stat">
-                            <strong>CNN–GRU</strong>
-                            <span>Arsitektur model</span>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="container">
-                <div class="section-heading">
-                    <p class="section-kicker">Mengapa VerDeep</p>
-                    <h2>Analisis yang terstruktur, transparan, dan berorientasi penelitian.</h2>
-                    <p>
-                        Sistem dirancang untuk membantu proses penyaringan awal video yang berpotensi
-                        mengalami manipulasi wajah digital.
-                    </p>
+            <!-- Fitur Section -->
+            <section class="mb-16 animate-fade-up" style="animation-delay: 0.2s;">
+                <div class="text-center mb-10">
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest block mb-2">Mengapa VerDeep</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark">Terstruktur & Analitis.</h2>
                 </div>
 
-                <div class="features">
-                    <article class="feature-card">
-                        <div class="feature-icon">◫</div>
-                        <h3>Analisis Urutan Frame</h3>
-                        <p>
-                            Video diproses sebagai urutan frame sehingga perubahan visual antarwaktu
-                            dapat dipertimbangkan oleh model GRU.
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-brand-dark text-2xl shadow-sm mb-6">
+                            <i class="ph-duotone ph-film-strip"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-dark mb-3">Analisis Frame</h3>
+                        <p class="text-sm font-medium text-brand-dark/60 leading-relaxed">
+                            Video diproses sebagai urutan frame sehingga pola pergerakan visual (temporal) dapat dipertimbangkan oleh GRU.
                         </p>
-                    </article>
-
-                    <article class="feature-card">
-                        <div class="feature-icon">⌁</div>
-                        <h3>Fokus pada Wajah</h3>
-                        <p>
-                            MTCNN digunakan untuk mendeteksi dan menyiapkan area wajah sebelum fitur
-                            visual diekstraksi oleh EfficientNetB0.
+                    </div>
+                    <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-brand-dark text-2xl shadow-sm mb-6">
+                            <i class="ph-duotone ph-bounding-box"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-dark mb-3">Fokus Wajah</h3>
+                        <p class="text-sm font-medium text-brand-dark/60 leading-relaxed">
+                            Area wajah dideteksi dan dipotong terlebih dahulu sebelum fitur visual diekstraksi secara presisi oleh CNN.
                         </p>
-                    </article>
-
-                    <article class="feature-card">
-                        <div class="feature-icon">◉</div>
-                        <h3>Skor yang Bertanggung Jawab</h3>
-                        <p>
-                            Output ditampilkan sebagai probabilitas atau skor deepfake, bukan sebagai
-                            kepastian absolut maupun keputusan forensik final.
+                    </div>
+                    <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-14 h-14 bg-brand-yellow rounded-2xl flex items-center justify-center text-brand-dark text-2xl shadow-sm mb-6">
+                            <i class="ph-duotone ph-chart-polar"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-dark mb-3">Skor Probabilitas</h3>
+                        <p class="text-sm font-medium text-brand-dark/60 leading-relaxed">
+                            Output berupa nilai persentase indikasi, memberikan pandangan analitis bukan sekadar vonis mutlak.
                         </p>
-                    </article>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="section method-section" id="metode">
-            <div class="container method-grid">
-                <div class="method-copy">
-                    <p class="section-kicker">Metode Model</p>
-                    <h2>Memadukan fitur spasial dan pola temporal.</h2>
-                    <p>
-                        EfficientNetB0 mempelajari karakteristik visual pada tiap wajah, sedangkan
-                        GRU mengevaluasi hubungan antarframe untuk menghasilkan prediksi pada tingkat video.
+            <!-- Metode & Spesifikasi Section -->
+            <section id="metode" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-10 animate-fade-up" style="animation-delay: 0.3s;">
+                
+                <div class="lg:col-span-6">
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest block mb-2">Metode Model</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark mb-6">Spasial & Temporal.</h2>
+                    <p class="text-sm md:text-base font-medium text-brand-dark/70 leading-relaxed mb-8">
+                        EfficientNetB0 mempelajari karakteristik visual (spasial) pada tiap frame wajah tunggal, sedangkan GRU mengevaluasi hubungan urutan antar-frame (temporal).
                     </p>
 
-                    <div class="method-list">
-                        <div class="method-item">
-                            <span class="check">✓</span>
-                            <p>
-                                <strong>Validasi awal:</strong> file diperiksa sebelum masuk ke tahap prediksi.
-                            </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 glass-panel-inner rounded-2xl">
+                            <div class="w-8 h-8 flex-shrink-0 bg-white text-brand-dark rounded-full flex items-center justify-center font-bold shadow-sm">
+                                <i class="ph-bold ph-check"></i>
+                            </div>
+                            <p class="text-sm font-medium text-brand-dark/80 pt-1.5"><strong class="font-bold text-brand-dark">Validasi Awal:</strong> File diperiksa kesesuaiannya.</p>
                         </div>
-
-                        <div class="method-item">
-                            <span class="check">✓</span>
-                            <p>
-                                <strong>Ekstraksi wajah:</strong> area wajah dideteksi dan dinormalisasi ke ukuran input model.
-                            </p>
-                        </div>
-
-                        <div class="method-item">
-                            <span class="check">✓</span>
-                            <p>
-                                <strong>Klasifikasi video:</strong> model menghitung skor untuk label Real atau Deepfake.
-                            </p>
+                        <div class="flex items-start gap-4 p-4 glass-panel-inner rounded-2xl">
+                            <div class="w-8 h-8 flex-shrink-0 bg-white text-brand-dark rounded-full flex items-center justify-center font-bold shadow-sm">
+                                <i class="ph-bold ph-check"></i>
+                            </div>
+                            <p class="text-sm font-medium text-brand-dark/80 pt-1.5"><strong class="font-bold text-brand-dark">Ekstraksi:</strong> Deteksi dan normalisasi ukuran wajah.</p>
                         </div>
                     </div>
                 </div>
 
-                <div>
-                    <div class="specification">
-                        <h3>Spesifikasi Pemrosesan</h3>
-
-                        <div class="spec-row">
-                            <span>Format utama</span>
-                            <strong>MP4</strong>
+                <div class="lg:col-span-6">
+                    <div class="glass-panel rounded-[2.5rem] p-8 md:p-10">
+                        <h3 class="text-xl font-bold text-brand-dark mb-6">Spesifikasi Sistem</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center pb-4 border-b border-brand-dark/10">
+                                <span class="text-sm font-medium text-brand-dark/60">Format Video</span>
+                                <strong class="text-sm font-bold text-brand-dark">MP4</strong>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-brand-dark/10">
+                                <span class="text-sm font-medium text-brand-dark/60">Durasi Maks</span>
+                                <strong class="text-sm font-bold text-brand-dark">30 Detik</strong>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-brand-dark/10">
+                                <span class="text-sm font-medium text-brand-dark/60">Resolusi Maks</span>
+                                <strong class="text-sm font-bold text-brand-dark">1920 × 1080</strong>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-brand-dark/10">
+                                <span class="text-sm font-medium text-brand-dark/60">Dimensi Model</span>
+                                <strong class="text-sm font-bold text-brand-dark">224 × 224 px</strong>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-brand-dark/60">Arsitektur</span>
+                                <strong class="text-sm font-bold text-brand-dark">CNN + GRU</strong>
+                            </div>
                         </div>
 
-                        <div class="spec-row">
-                            <span>Durasi maksimum</span>
-                            <strong>30 detik</strong>
-                        </div>
-
-                        <div class="spec-row">
-                            <span>Resolusi maksimum</span>
-                            <strong>1920 × 1080</strong>
-                        </div>
-
-                        <div class="spec-row">
-                            <span>Urutan frame model</span>
-                            <strong>60 frame</strong>
-                        </div>
-
-                        <div class="spec-row">
-                            <span>Ukuran masukan</span>
-                            <strong>224 × 224 piksel</strong>
-                        </div>
-
-                        <div class="spec-row">
-                            <span>Arsitektur</span>
-                            <strong>EfficientNetB0 + GRU (64 unit)</strong>
-                        </div>
-
-                        <div class="notice">
-                            <strong>Catatan penting:</strong> video tanpa wajah yang dapat dideteksi,
-                            video rusak, atau video yang melampaui ketentuan akan ditolak sebelum prediksi.
+                        <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex gap-3">
+                            <i class="ph-fill ph-warning-circle text-amber-500 text-xl flex-shrink-0 mt-0.5"></i>
+                            <p class="text-xs font-medium text-amber-900/80 leading-relaxed">
+                                <strong class="font-bold">Perhatian:</strong> Video tanpa wajah terdeteksi, atau format tidak sesuai akan ditolak sebelum masuk pipeline.
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        
-    </main>
+        </main>
 
-    <footer class="footer">
-        <div class="container footer-content">
-            <div><strong>VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+        <!-- Footer -->
+        <footer class="mt-16 py-6 border-t border-white/40 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-brand-dark/60">
+            <div><strong class="text-brand-dark font-bold">VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
             <div>Penelitian Deteksi Deepfake Berbasis CNN–GRU.</div>
-        </div>
-    </footer>
+        </footer>
+        
+    </div>
 </body>
 </html>

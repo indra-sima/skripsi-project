@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak - VerDeep</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons (opsional, untuk ikon yang lebih estetik) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FCD34D', // Warm bright yellow
+                            dark: '#1C1C1E',   // Dark slate/black
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base styling and background */
+        body {
+            /* Warm, blurred background image resembling a modern interior */
+            background-image: url('https://plus.unsplash.com/premium_photo-1789628175586-8f5b33fbfb6b?w=300&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #1C1C1E;
+        }
+
+        /* Background overlay to ensure readability */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(230, 220, 210, 0.4);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: -1;
+        }
+
+        /* Glassmorphism Panel Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animasi Kemunculan Panel */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-6 font-sans">
+    
+    <div class="bg-overlay"></div>
+
+    <div class="max-w-[1120px] mx-auto w-full flex-1 flex flex-col">
+        
+        <!-- Top Navigation -->
+        <nav class="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
+            <!-- Brand / Logo -->
+            <a href="{{ url_for('home') }}" class="flex items-center gap-3 glass-panel px-5 py-3 rounded-full hover:bg-white/60 transition-colors">
+                <div class="w-10 h-10 bg-brand-dark rounded-xl flex items-center justify-center text-brand-yellow font-bold text-xl shadow-md">
+                    V
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-lg tracking-tight leading-none mb-1">VerDeep</span>
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest leading-none">Deteksi ShortVideo</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <div class="flex items-center gap-1 glass-panel p-1.5 rounded-full overflow-x-auto max-w-full">
+                <a href="{{ url_for('home') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Beranda</a>
+                <a href="{{ url_for('index') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Analisis</a>
+                <a href="{{ url_for('riwayat') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Riwayat</a>
+                <a href="{{ url_for('arsitektur') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Arsitektur</a>
+                <!-- Link Aktif -->
+                <a href="{{ url_for('kontak') }}" class="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-semibold shadow-md whitespace-nowrap">Kontak</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col items-center justify-center">
+            
+            <div class="text-center mb-10">
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-brand-dark">Informasi Pengembang</h1>
+            </div>
+
+            <!-- Profile Card -->
+            <section class="glass-panel rounded-[2.5rem] p-10 md:p-14 max-w-[650px] w-full text-center animate-fade-up relative overflow-hidden">
+                
+                <!-- Dekorasi Latar (Opsional) -->
+                <div class="absolute top-0 right-0 p-8 opacity-20 pointer-events-none">
+                    <i class="ph-fill ph-code text-9xl text-brand-dark"></i>
+                </div>
+
+                <!-- Avatar -->
+                <div class="w-24 h-24 mx-auto bg-brand-yellow border-4 border-white shadow-xl rounded-full flex items-center justify-center text-brand-dark text-4xl font-black mb-6 relative z-10">
+                    I
+                </div>
+                
+                <!-- Info -->
+                <h2 class="text-3xl font-extrabold text-brand-dark mb-2 relative z-10">Indra Sima M</h2>
+                <div class="text-xs font-bold uppercase tracking-[0.2em] text-brand-dark/60 mb-8 relative z-10">Peneliti & Pengembang Web</div>
+                
+                <!-- Deskripsi -->
+                <p class="text-brand-dark/80 text-sm md:text-base leading-relaxed mb-10 relative z-10 font-medium px-4">
+                    Aplikasi web VerDeep ini merupakan sistem yang dikembangkan sebagai bagian dari proyek tugas akhir (skripsi) untuk menguji dan mengimplementasikan model <i class="font-bold">deep learning</i> dalam mendeteksi manipulasi video <i class="font-bold">deepfake</i> di lingkungan berbasis web.
+                </p>
+                
+                <!-- Action Button -->
+                <a href="mailto:indrasimam@gmail.com" class="inline-flex items-center gap-3 bg-brand-dark text-brand-yellow px-8 py-4 rounded-full text-sm font-semibold hover:bg-black transition-transform hover:scale-105 shadow-lg relative z-10">
+                    <i class="ph-bold ph-envelope-simple text-lg"></i>
+                    Kirim Email
+                </a>
+            </section>
+            
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 py-6 border-t border-white/40 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-brand-dark/60">
+            <div><strong class="text-brand-dark font-bold">VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRU.</div>
+        </footer>
+        
+    </div>
+
+</body>
+</html>

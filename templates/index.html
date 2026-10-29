@@ -3,1299 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mulai Analisis</title>
+    <title>Analisis - VerDeep</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FCD34D',
+                            dark: '#1C1C1E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        :root {
-            --navy: #102A43;
-            --navy-dark: #081D2D;
-            --teal: #0F9D8A;
-            --teal-dark: #087B6C;
-            --coral: #E05252;
-            --amber: #F59E0B;
-            --background: #CFE2E8;
-            --white: #FFFFFF;
-            --text: #243B53;
-            --muted: #627D98;
-            --border: #D9E2EC;
-            --soft-teal: #E5F7F3;
-            --soft-coral: #FDECEC;
-            --soft-amber: #FFF7E5;
-            --shadow: 0 16px 36px rgba(16, 42, 67, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            min-height: 100%;
-        }
-
+        /* Base styling and background */
         body {
-            margin: 0;
-            min-height: 100vh;
-            position: relative;
-            isolation: isolate;
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-            line-height: 1.55;
-            background: var(--background);
+            background-image: url('https://plus.unsplash.com/premium_photo-1789628175586-8f5b33fbfb6b?w=300&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #1C1C1E;
         }
 
-        body::before {
-            content: "";
+        /* Background overlay */
+        .bg-overlay {
             position: fixed;
-            inset: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(230, 220, 210, 0.4);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             z-index: -1;
-            pointer-events: none;
-
-            background-color: var(--background);
-            background-image:
-                linear-gradient(
-                    180deg,
-                    rgba(225, 243, 242, 0.20) 0%,
-                    rgba(235, 244, 247, 0.30) 48%,
-                    rgba(220, 235, 241, 0.42) 100%
-                ),
-                url("{{ url_for('static', filename='images/veriframe-background-concept.png') }}");
-            background-repeat: no-repeat, no-repeat;
-            background-position: center, center;
-            background-size: cover, cover;
         }
 
-        a {
-            text-decoration: none;
+        /* Glassmorphism Panel Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-        .container {
-            width: min(1120px, calc(100% - 40px));
-            margin: 0 auto;
-        }
-
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(205, 220, 230, 0.72);
-            background: rgba(255, 255, 255, 0.48);
+        .glass-panel-inner {
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .navbar-content {
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
+        /* Animasi Kemunculan Panel */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.6s ease-out forwards;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--navy);
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: -0.3px;
+        /* Loading Spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-
-        .brand-mark {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 11px;
-            background: var(--navy);
-            color: var(--white);
-            font-size: 1.05rem;
-            box-shadow: 0 8px 18px rgba(16, 42, 67, 0.18);
-        }
-
-        .brand-text small {
-            display: block;
-            margin-top: 1px;
-            color: var(--muted);
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-        }
-
-        .back-link {
-            color: var(--navy);
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .back-link:hover {
-            color: var(--teal);
-        }
-
-        .page-header {
-            padding: 48px 0 28px;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 13px;
-            color: var(--muted);
-            font-size: 0.83rem;
-        }
-
-        .breadcrumb a {
-            color: var(--teal-dark);
-            font-weight: 700;
-        }
-
-        .page-header h1 {
-            margin: 0;
-            color: var(--navy);
-            font-size: clamp(2rem, 4vw, 2.8rem);
-            line-height: 1.16;
-            letter-spacing: -0.9px;
-        }
-
-        .page-header p {
-            max-width: 710px;
-            margin: 12px 0 0;
-            color: var(--muted);
-            font-size: 0.98rem;
-        }
-        .analysis-layout {
-            display: grid;
-            grid-template-columns: 1.03fr 0.97fr;
-            align-items: stretch;
-            gap: 24px;
-            min-height: 590px;
-            padding-bottom: 38px;
-        }
-        .upload-panel,
-        .preview-panel {
-            height: 100%;
-        }
-
-        .panel {
-            min-height: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(205, 220, 230, 0.78);
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.78);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .panel-header {
-            padding: 22px 24px 18px;
-            border-bottom: 1px solid rgba(217, 226, 236, 0.76);
-            background: rgba(255, 255, 255, 0.20);
-        }
-
-        .panel-header h2 {
-            margin: 0;
-            color: var(--navy);
-            font-size: 1.16rem;
-        }
-
-        .panel-header p {
-            margin: 6px 0 0;
-            color: var(--muted);
-            font-size: 0.88rem;
-        }
-
-        .panel-body,
-        .preview-body {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            padding: 24px;
-        }
-
-        .drop-zone {
-            position: relative;
-            min-height: 278px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 24px;
-            border: 2px dashed rgba(116, 165, 189, 0.76);
-            border-radius: 13px;
-            background: rgba(250, 252, 253, 0.54);
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-        }
-
-        .drop-zone:hover,
-        .drop-zone.drag-active {
-            border-color: var(--teal);
-            background: rgba(229, 247, 243, 0.72);
-        }
-
-        .drop-zone.drag-active {
-            transform: scale(1.01);
-        }
-
-        .upload-icon {
-            width: 65px;
-            height: 65px;
-            display: grid;
-            place-items: center;
-            margin: 0 auto 15px;
-            border-radius: 18px;
-            background: rgba(229, 247, 243, 0.86);
-            color: var(--teal-dark);
-            font-size: 1.9rem;
-            font-weight: 700;
-        }
-
-        .drop-zone h3 {
-            margin: 0;
-            color: var(--navy);
-            font-size: 1.08rem;
-        }
-
-        .drop-zone p {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 0.88rem;
-        }
-
-        .browse-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 39px;
-            margin-top: 16px;
-            padding: 0 16px;
-            border-radius: 8px;
-            background: var(--navy);
-            color: var(--white);
-            font-size: 0.84rem;
-            font-weight: 800;
-            pointer-events: none;
-        }
-
-        #videoInput {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .file-selected {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            margin-top: 16px;
-            padding: 13px 14px;
-            border: 1px solid rgba(185, 228, 221, 0.92);
-            border-radius: 10px;
-            background: rgba(229, 247, 243, 0.76);
-        }
-
-        .file-selected.visible {
-            display: flex;
-        }
-
-        .file-data {
-            min-width: 0;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
-
-        .file-badge {
-            width: 35px;
-            height: 35px;
-            flex: 0 0 35px;
-            display: grid;
-            place-items: center;
-            border-radius: 9px;
-            background: var(--teal);
-            color: var(--white);
-            font-size: 0.78rem;
-            font-weight: 800;
-        }
-
-        .file-name {
-            overflow: hidden;
-            color: var(--navy);
-            font-size: 0.86rem;
-            font-weight: 800;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .file-size {
-            margin-top: 1px;
-            color: var(--muted);
-            font-size: 0.76rem;
-        }
-
-        .remove-file {
-            flex: 0 0 auto;
-            padding: 7px 10px;
-            border: 0;
-            border-radius: 7px;
-            background: transparent;
-            color: var(--coral);
-            font-family: inherit;
-            font-size: 0.78rem;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .remove-file:hover {
-            background: var(--soft-coral);
-        }
-
-        .client-message {
-            display: none;
-            margin-top: 14px;
-            padding: 12px 14px;
-            border-radius: 9px;
-            font-size: 0.84rem;
-        }
-
-        .client-message.visible {
-            display: flex;
-            gap: 9px;
-            align-items: flex-start;
-        }
-
-        .client-message.error {
-            border: 1px solid #F3BBBB;
-            background: var(--soft-coral);
-            color: #A53636;
-        }
-
-        .client-message.warning {
-            border: 1px solid #F8D68B;
-            background: var(--soft-amber);
-            color: #8A5A00;
-        }
-
-        .upload-specs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .spec-card {
-            padding: 12px 10px;
-            border: 1px solid rgba(217, 226, 236, 0.78);
-            border-radius: 10px;
-            background: rgba(250, 252, 253, 0.58);
-            text-align: center;
-        }
-
-        .spec-card strong {
-            display: block;
-            color: var(--navy);
-            font-size: 0.84rem;
-        }
-
-        .spec-card span {
-            display: block;
-            margin-top: 2px;
-            color: var(--muted);
-            font-size: 0.73rem;
-        }
-
-        .submit-button {
-            width: 100%;
-            min-height: 50px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 70px;
-            border: 0;
-            border-radius: 19px;
-            background: var(--teal);
-            color: var(--white);
-            font-family: inherit;
-            font-size: 0.94rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-        }
-
-        .submit-button:hover:not(:disabled) {
-            background: var(--teal-dark);
-            transform: translateY(-1px);
-        }
-
-        .submit-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.58;
-        }
-
         .spinner {
             display: none;
-            width: 17px;
-            height: 17px;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-top-color: var(--white);
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.4);
+            border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-
-        .loading .spinner {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .preview-shell {
-            position: relative;
-            min-height: 300px;
-            aspect-ratio: 16 / 10;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(217, 226, 236, 0.82);
-            border-radius: 12px;
-        }
-
-        .empty-preview {
-            padding: 28px;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        .empty-preview-icon {
-            width: 54px;
-            height: 54px;
-            display: grid;
-            place-items: center;
-            margin: 0 auto 11px;
-            border-radius: 50%;
-            background: rgba(16, 42, 67, 0.09);
-            color: var(--navy);
-            font-size: 1.3rem;
-        }
-
-        .empty-preview strong {
-            display: block;
-            color: var(--navy);
-            font-size: 0.93rem;
-        }
-
-        .empty-preview span {
-            display: block;
-            margin-top: 4px;
-            font-size: 0.8rem;
-        }
-
-        #videoPreview {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #06131F;
-        }
-        .video-meta {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 11px;
-            margin-top: 16px;
-        }
-
-        .meta-item {
-            min-width: 0;
-            min-height: 68px;
-            padding: 12px;
-            border: 1px solid rgba(217, 226, 236, 0.78);
-            border-radius: 9px;
-            background: rgba(250, 252, 253, 0.58);
-        }
-
-        .meta-item span {
-            display: block;
-            color: var(--muted);
-            font-size: 0.73rem;
-        }
-
-        .meta-item strong {
-            display: block;
-            overflow: hidden;
-            margin-top: 3px;
-            color: var(--navy);
-            font-size: 0.84rem;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .processing-info {
-            margin-top: 22px;
-            padding: 17px;
-            border-left: 4px solid var(--amber);
-            border-radius: 0 10px 10px 0;
-            background: rgba(255, 247, 229, 0.76);
-        }
-
-        .processing-info h3 {
-            margin: 0;
-            color: #7C5205;
-            font-size: 0.9rem;
-        }
-
-        .processing-info p {
-            margin: 5px 0 0;
-            color: #8A640F;
-            font-size: 0.8rem;
-        }
-
-        .process-list {
-            display: grid;
-            gap: 10px;
-            margin: 19px 0 0;
-        }
-
-        .process-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 11px;
-        }
-
-        .process-number {
-            width: 25px;
-            height: 25px;
-            flex: 0 0 25px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: rgba(229, 247, 243, 0.86);
-            color: var(--teal-dark);
-            font-size: 0.72rem;
-            font-weight: 800;
-        }
-
-        .process-item p {
-            margin: 2px 0 0;
-            color: var(--muted);
-            font-size: 0.82rem;
-            line-height: 1.45;
-        }
-
-        .process-item strong {
-            color: var(--text);
-        }
-
-        .disclaimer {
-            margin: 0 0 46px;
-            padding: 16px 18px;
-            border: 1px solid rgba(249, 221, 163, 0.90);
-            border-radius: 11px;
-            background: rgba(255, 248, 232, 0.78);
-            color: #77510A;
-            font-size: 0.84rem;
-            box-shadow: 0 8px 20px rgba(124, 82, 5, 0.05);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .disclaimer strong {
-            color: #845800;
-        }
-
-        .footer {
-            padding: 23px 0 29px;
-            border-top: 1px solid rgba(205, 220, 230, 0.68);
-            background: rgba(255, 255, 255, 0.38);
-            color: var(--muted);
-            font-size: 0.81rem;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            gap: 14px;
-        }
-
-        .footer strong {
-            color: var(--navy);
-        }
-
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            background: rgba(8, 29, 45, 0.84);
-            backdrop-filter: blur(7px);
-            -webkit-backdrop-filter: blur(7px);
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-card {
-            width: min(430px, 100%);
-            padding: 38px 30px 34px;
-            border: 1px solid rgba(255, 255, 255, 0.17);
-            border-radius: 20px;
-            background: linear-gradient(145deg, #173E59, #102A43);
-            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-            color: #FFFFFF;
-            text-align: center;
-        }
-
-        .loading-logo-wrap {
-            position: relative;
-            width: 108px;
-            height: 108px;
-            display: grid;
-            place-items: center;
-            margin: 0 auto 23px;
-        }
-
-        .loading-ring {
-            position: absolute;
-            inset: 0;
-            border: 3px solid rgba(75, 227, 202, 0.20);
-            border-top-color: #4BE3CA;
-            border-radius: 50%;
-            animation: loading-spin 1s linear infinite;
-        }
-
-        .loading-ring-inner {
-            position: absolute;
-            inset: 11px;
-            border: 2px solid rgba(255, 255, 255, 0.12);
-            border-bottom-color: #FFFFFF;
-            border-radius: 50%;
-            animation: loading-spin-reverse 1.45s linear infinite;
-        }
-
-        .loading-logo {
-            width: 62px;
-            height: 62px;
-            display: grid;
-            place-items: center;
-            border-radius: 18px;
-            background: var(--teal);
-            box-shadow: 0 9px 20px rgba(15, 157, 138, 0.28);
-            color: var(--white);
-            font-size: 1.75rem;
-            font-weight: 800;
-        }
-
-        .loading-card h2 {
-            margin: 0;
-            color: var(--white);
-            font-size: 1.42rem;
-            letter-spacing: -0.35px;
-        }
-
-        .loading-card p {
-            max-width: 340px;
-            margin: 10px auto 0;
-            color: #C6D8E5;
-            font-size: 0.89rem;
-            line-height: 1.6;
-        }
-
-        .loading-steps {
-            display: grid;
-            gap: 10px;
-            margin-top: 25px;
-            text-align: left;
-        }
-
-        .loading-step {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 9px;
-            background: rgba(255, 255, 255, 0.06);
-            color: #DCEAF2;
-            font-size: 0.8rem;
-        }
-
-        .loading-pulse {
-            width: 9px;
-            height: 9px;
-            flex: 0 0 9px;
-            border-radius: 50%;
-            background: #4BE3CA;
-            box-shadow: 0 0 0 0 rgba(75, 227, 202, 0.55);
-            animation: loading-pulse 1.4s ease-out infinite;
-        }
-
-        .loading-step:nth-child(2) .loading-pulse {
-            animation-delay: 0.25s;
-        }
-
-        .loading-step:nth-child(3) .loading-pulse {
-            animation-delay: 0.5s;
-        }
-
-
-
-        .loading-note {
-            display: block;
-            margin-top: 19px;
-            color: #AFC5D4;
-            font-size: 0.74rem;
-        }
-
-        @keyframes loading-spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes loading-spin-reverse {
-            to {
-                transform: rotate(-360deg);
-            }
-        }
-
-        @keyframes loading-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(75, 227, 202, 0.55);
-            }
-
-            70% {
-                box-shadow: 0 0 0 9px rgba(75, 227, 202, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(75, 227, 202, 0);
-            }
-        }
-
-        @supports not (backdrop-filter: blur(10px)) {
-            .navbar,
-            .footer {
-                background: rgba(255, 255, 255, 0.78);
-            }
-
-            .panel {
-                background: rgba(255, 255, 255, 0.86);
-            }
-        }
-        /* Card upload menjadi susunan vertikal */
-            .upload-panel {
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* Area isi memenuhi ruang yang tersedia */
-            .upload-panel .panel-body {
-                display: flex;
-                flex: 1;
-                flex-direction: column;
-                padding: 24px;
-            }
-
-            /* Form juga harus memenuhi ruang card */
-            .upload-panel #uploadForm {
-                display: flex;
-                flex: 1;
-                flex-direction: column;
-            }
-
-            /* Tombol berada di bawah form */
-           .upload-panel .submit-button {
-                margin-top: 32px;
-                margin-bottom: 0;
-                min-height: 50px;
-                flex-shrink: 0;
-            }
-
-        @media (max-width: 860px) {
-            .analysis-layout {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-                @media (max-width: 560px) {
-            .container {
-                width: min(100% - 28px, 1120px);
-            }
-
-            .navbar-content {
-                min-height: 64px;
-            }
-
-            .back-link {
-                font-size: 0;
-            }
-
-            .back-link::before {
-                content: "←";
-                font-size: 1.25rem;
-            }
-
-            .page-header {
-                padding: 36px 0 23px;
-            }
-
-            .panel-header,
-            .panel-body,
-            .preview-body {
-                padding: 19px;
-            }
-
-            .drop-zone {
-                min-height: 240px;
-                padding: 22px 16px;
-            }
-
-            .upload-specs {
-                grid-template-columns: 1fr;
-            }
-
-            .file-selected.visible {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .remove-file {
-                margin-left: 46px;
-            }
-
-            .loading-card {
-                padding: 31px 22px 27px;
-            }
-
-            .loading-logo-wrap {
-                width: 94px;
-                height: 94px;
-            }
-
-            .loading-logo {
-                width: 54px;
-                height: 54px;
-                border-radius: 16px;
-                font-size: 1.5rem;
-            }
-
-            .footer-content {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-        }
-
-        /* Panduan berlaku pada desktop dan mobile */
-        .upload-panel #uploadForm {
-            flex: 0 0 auto;
-        }
-
-        .upload-panel .submit-button {
-            margin-top: 32px;
-            margin-bottom: 0;
-        }
-
-        .upload-guide {
-            margin-top: 24px;
-            padding: 18px 20px;
-            border: 1px solid rgba(15, 157, 138, 0.18);
-            border-radius: 12px;
-            background: linear-gradient(
-                135deg,
-                rgba(229, 247, 243, 0.90),
-                rgba(240, 248, 251, 0.90)
-            );
-        }
-
-        .upload-guide-heading {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .upload-guide-icon {
-            width: 25px;
-            height: 25px;
-            flex: 0 0 25px;
-            display: grid;
-            place-items: center;
-            border-radius: 8px;
-            background: rgba(15, 157, 138, 0.12);
-            color: var(--teal-dark);
-            font-size: 0.85rem;
-            font-weight: 800;
-        }
-
-        .upload-guide-heading h3 {
-            margin: 0;
-            color: var(--navy);
-            font-size: 0.92rem;
-        }
-
-        .upload-guide-intro {
-            margin: 10px 0 12px;
-            color: var(--text);
-            font-size: 0.81rem;
-            line-height: 1.55;
-        }
-
-        .upload-guide-list {
-            display: grid;
-            gap: 8px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .upload-guide-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 9px;
-            color: var(--text);
-            font-size: 0.80rem;
-            line-height: 1.5;
-        }
-
-        .upload-guide-list li::before {
-            content: "✓";
-            flex: 0 0 16px;
-            color: var(--teal-dark);
-            font-weight: 800;
-        }
-
-        .upload-guide-note {
-            margin: 14px 0 0;
-            padding-top: 12px;
-            border-top: 1px solid rgba(15, 157, 138, 0.15);
-            color: var(--muted);
-            font-size: 0.75rem;
-            line-height: 1.5;
-        }
-    </style>
-</head>
+        .btn-loading .spinner { display: inline-block; }
         
+        /* Drag & Drop Zone Styles */
+        #dropZone { transition: all 0.2s ease; }
+        #dropZone.drag-active {
+            border-color: #1C1C1E;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(1.02);
+        }
 
-
+        /* Hide elements dynamically */
+        .hidden-elm { display: none !important; }
+        
+        /* Overlay Loading Animation */
+        @keyframes loading-spin { 100% { transform: rotate(360deg); } }
+        @keyframes loading-spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes loading-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.8); opacity: 0.5; } }
     </style>
 </head>
+<body class="min-h-screen flex flex-col p-4 md:p-6 font-sans">
+    
+    <div class="bg-overlay"></div>
 
-<body>
-    <header class="navbar">
-        <div class="container navbar-content">
-            <a class="brand" href="{{ url_for('home') }}">
-                <span class="brand-mark">V</span>
-                <span class="brand-text">
-                    VerDeep
-                    <small>Deteksi ShortVideo Deepfake</small>
-                </span>
-            </a>
-
-            <a class="back-link" href="{{ url_for('home') }}">
-                Beranda
-            </a>
-        </div>
-    </header>
-
-    <main>
-        <section class="container page-header">
-            <div class="breadcrumb">
-                <a href="{{ url_for('home') }}">Beranda</a>
-                <span>/</span>
-                <span>Analisis ShortVideo</span>
-            </div>
-
-            <h1>Analisis ShortVideo</h1>
-
-            <p>
-                Unggah satu video MP4 untuk diperiksa oleh pipeline VerDeep. Sistem akan memvalidasi
-                media, mendeteksi wajah, mengekstraksi fitur visual, lalu menghasilkan skor prediksi.
-            </p>
-        </section>
-
-        <section class="container analysis-layout">
-            <div class="panel upload-panel">
-                <div class="panel-header">
-                    <h2>Unggah Video</h2>
-                    <p>Pilih atau drag file video MP4 yang ingin diperiksa.</p>
+    <div class="max-w-[1120px] mx-auto w-full flex-1 flex flex-col">
+        
+        <!-- Top Navigation -->
+        <nav class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 md:mb-12">
+            <a href="{{ url_for('home') }}" class="flex items-center gap-3 glass-panel px-5 py-3 rounded-full hover:bg-white/60 transition-colors">
+                <div class="w-10 h-10 bg-brand-dark rounded-xl flex items-center justify-center text-brand-yellow font-bold text-xl shadow-md">
+                    V
                 </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-lg tracking-tight leading-none mb-1">VerDeep</span>
+                    <span class="text-[10px] font-bold text-brand-dark/50 uppercase tracking-widest leading-none">Deteksi ShortVideo</span>
+                </div>
+            </a>
 
-                <div class="panel-body">
-                    <form id="uploadForm"
-                          method="POST"
-                          action="{{ url_for('index') }}"
-                          enctype="multipart/form-data"
-                          novalidate>
+            <div class="flex items-center gap-1 glass-panel p-1.5 rounded-full overflow-x-auto max-w-full">
+                <a href="{{ url_for('home') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Beranda</a>
+                <a href="{{ url_for('index') }}" class="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-semibold shadow-md whitespace-nowrap">Analisis</a>
+                <a href="{{ url_for('riwayat') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Riwayat</a>
+                <a href="{{ url_for('arsitektur') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Arsitektur</a>
+                <a href="{{ url_for('kontak') }}" class="px-5 py-2 rounded-full text-brand-dark/70 hover:bg-white/40 text-sm font-medium transition-colors whitespace-nowrap">Kontak</a>
+            </div>
+        </nav>
 
-                        <label class="drop-zone" id="dropZone" for="videoInput">
-                            <input
-                                id="videoInput"
-                                type="file"
-                                name="video"
-                                accept=".mp4,video/mp4"
-                            >
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col w-full">
+            
+            <!-- Header Section -->
+            <section class="mb-10 text-center md:text-left animate-fade-up">
+                <div class="flex items-center justify-center md:justify-start gap-2 text-sm font-bold text-brand-dark/50 mb-3">
+                    <a href="{{ url_for('home') }}" class="hover:text-brand-dark transition-colors">Beranda</a>
+                    <i class="ph-bold ph-caret-right text-xs"></i>
+                    <span class="text-brand-dark">Analisis ShortVideo</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-brand-dark mb-4">Analisis ShortVideo</h1>
+                <p class="text-brand-dark/70 font-medium max-w-3xl leading-relaxed text-sm md:text-base mx-auto md:mx-0">
+                    Unggah satu video MP4 untuk diperiksa oleh pipeline VerDeep. Sistem akan memvalidasi media, mendeteksi wajah, mengekstraksi fitur visual, lalu menghasilkan skor prediksi.
+                </p>
+            </section>
 
-                            <div>
-                                <div class="upload-icon">↑</div>
-                                <h3>Seret video MP4 ke area ini</h3>
-                                <p>atau pilih video dari perangkat Anda</p>
-                                <span class="browse-button">Pilih File Video</span>
+            <!-- Layout Grid -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch mb-10">
+                
+                <!-- Kiri: Upload Panel -->
+                <div class="lg:col-span-7 glass-panel rounded-[2.5rem] flex flex-col overflow-hidden animate-fade-up" style="animation-delay: 0.1s;">
+                    <div class="px-8 pt-8 pb-4 border-b border-brand-dark/10 bg-white/30">
+                        <h2 class="text-xl font-bold text-brand-dark">Unggah Video</h2>
+                        <p class="text-sm font-medium text-brand-dark/60 mt-1">Pilih atau drag file video MP4 yang ingin diperiksa.</p>
+                    </div>
+
+                    <div class="p-8 flex-1 flex flex-col">
+                        <form id="uploadForm" method="POST" action="{{ url_for('index') }}" enctype="multipart/form-data" novalidate class="flex flex-col flex-1 h-full">
+                            
+                            <!-- Drop Zone -->
+                            <label id="dropZone" for="videoInput" class="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-brand-dark/30 rounded-3xl bg-white/40 cursor-pointer hover:bg-white/60 hover:border-brand-dark/50 min-h-[260px] text-center group flex-1">
+                                <input id="videoInput" type="file" name="video" accept=".mp4,video/mp4" class="hidden">
+                                
+                                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-brand-dark text-3xl font-bold shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                                    <i class="ph-bold ph-upload-simple"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-brand-dark mb-1">Seret video ke area ini</h3>
+                                <p class="text-sm font-medium text-brand-dark/50 mb-4">atau pilih video dari perangkat Anda</p>
+                                <span class="bg-brand-dark text-brand-yellow px-5 py-2.5 rounded-full text-xs font-bold pointer-events-none group-hover:bg-black transition-colors">Pilih File Video</span>
+                            </label>
+
+                            <!-- Alert Messages -->
+                            <div id="clientError" class="hidden-elm flex items-start gap-3 mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium shadow-sm">
+                                <i class="ph-fill ph-warning-circle text-lg mt-0.5"></i>
+                                <span id="clientErrorText"></span>
                             </div>
-                        </label>
+                            <div id="clientWarning" class="hidden-elm flex items-start gap-3 mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm font-medium shadow-sm">
+                                <i class="ph-fill ph-info text-lg mt-0.5"></i>
+                                <span id="clientWarningText"></span>
+                            </div>
 
-                        <div class="file-selected" id="fileSelected">
-                            <div class="file-data">
-                                <span class="file-badge">MP4</span>
-
-                                <div>
-                                    <div class="file-name" id="fileName">-</div>
-                                    <div class="file-size" id="fileSize">-</div>
+                            <!-- Specs Cards -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                                <div class="glass-panel-inner p-3 rounded-xl text-center">
+                                    <strong class="block text-brand-dark text-sm font-extrabold">MP4</strong>
+                                    <span class="block text-brand-dark/60 text-xs font-medium mt-1">Format video</span>
+                                </div>
+                                <div class="glass-panel-inner p-3 rounded-xl text-center">
+                                    <strong class="block text-brand-dark text-sm font-extrabold">≤ 30 detik</strong>
+                                    <span class="block text-brand-dark/60 text-xs font-medium mt-1">Durasi maksimum</span>
+                                </div>
+                                <div class="glass-panel-inner p-3 rounded-xl text-center">
+                                    <strong class="block text-brand-dark text-sm font-extrabold">≤ 1920×1080</strong>
+                                    <span class="block text-brand-dark/60 text-xs font-medium mt-1">Resolusi maks</span>
                                 </div>
                             </div>
 
-                            <button type="button" class="remove-file" id="removeFile">
-                                Hapus
+                             <button id="submitButton" type="submit" disabled class="mt-8 w-full bg-brand-dark text-brand-yellow py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-dark shadow-md">
+                                  <span class="spinner"></span>
+                                <span id="submitText">PILIH VIDEO DAHULU</span>
                             </button>
-                        </div>
+                                                    </form>
 
-                        <div class="client-message error" id="clientError" role="alert">
-                            <span>⚠</span>
-                            <span id="clientErrorText"></span>
-                        </div>
-
-                        <div class="client-message warning" id="clientWarning" role="status">
-                            <span>ⓘ</span>
-                            <span id="clientWarningText"></span>
-                        </div>
-
-                        <div class="upload-specs">
-                            <div class="spec-card">
-                                <strong>MP4</strong>
-                                <span>Format video</span>
+                        <!-- Guide Section -->
+                        <section class="mt-8 p-5 glass-panel-inner rounded-2xl border-brand-dark/20">
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="w-7 h-7 bg-white text-brand-dark flex items-center justify-center rounded-lg shadow-sm">
+                                    <i class="ph-bold ph-lightbulb"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-brand-dark">Panduan Video</h3>
                             </div>
-
-                            <div class="spec-card">
-                                <strong>≤ 30 detik</strong>
-                                <span>Durasi maksimum</span>
+                            <p class="text-xs font-medium text-brand-dark/70 mb-3 leading-relaxed">
+                                Pastikan video memenuhi kriteria berikut agar hasil analisis lebih optimal:
+                            </p>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-start gap-2 text-xs font-medium text-brand-dark/80">
+                                    <i class="ph-fill ph-check-circle text-brand-dark mt-0.5"></i>
+                                    Wajah terlihat jelas dan tidak terhalang.
+                                </li>
+                                <li class="flex items-start gap-2 text-xs font-medium text-brand-dark/80">
+                                    <i class="ph-fill ph-check-circle text-brand-dark mt-0.5"></i>
+                                    Pencahayaan cukup, tidak terlalu gelap atau over-exposed.
+                                </li>
+                            </ul>
+                            <div class="pt-3 border-t border-brand-dark/10 text-[12px] font-medium text-brand-dark/60 leading-relaxed">
+                                *Catatan: Hasil analisis model adalah probabilitas matematis. Gunakan sebagai petunjuk awal, bukan sebagai pengambil keputusan mutlak.
                             </div>
+                        </section>
+                    </div>
+                </div>
 
-                            <div class="spec-card">
-                                <strong>≤ 1920×1080</strong>
-                                <span>Resolusi maksimum</span>
-                            </div>
-                        </div>
+                <!-- Kanan: Preview Panel -->
+                <aside class="lg:col-span-5 glass-panel rounded-[2.5rem] flex flex-col overflow-hidden animate-fade-up" style="animation-delay: 0.2s;">
+                    <div class="px-8 pt-8 pb-4 border-b border-brand-dark/10 bg-white/30">
+                        <h2 class="text-xl font-bold text-brand-dark">Pratinjau File</h2>
+                        <p class="text-sm font-medium text-brand-dark/60 mt-1">Periksa ulang media yang diunggah.</p>
+                    </div>
 
-                        <button class="submit-button" id="submitButton" type="submit">
-                            <span class="spinner"></span>
-                            <span id="submitText">MULAI ANALISIS</span>
-                        </button>
+                    <div class="p-6 flex-1 flex flex-col gap-6 bg-white/10">
                         
-                    </form>
-                                            </button>
-                    </form>
+                        <!-- Video Shell -->
+                        <div class="relative w-full aspect-video bg-brand-dark rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
+                            
+                            <div id="emptyPreview" class="flex flex-col items-center justify-center p-6 text-center">
+                                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white/50 text-xl mb-3">
+                                    <i class="ph-fill ph-play-circle"></i>
+                                </div>
+                                <strong class="text-white text-sm">Pratinjau Video</strong>
+                                <span class="text-white/50 text-xs mt-1">Video akan muncul di sini</span>
+                            </div>
 
-                    <!-- Panduan di bawah tombol analisis -->
-                    <section class="upload-guide"
-                             aria-labelledby="uploadGuideTitle">
-
-                        <div class="upload-guide-heading">
-                            <span class="upload-guide-icon"
-                                  aria-hidden="true">i</span>
-
-                            <h3 id="uploadGuideTitle">Panduan video</h3>
+                            <video id="videoPreview" controls preload="metadata" class="hidden-elm absolute inset-0 w-full h-full object-contain bg-black"></video>
                         </div>
 
-                        <p class="upload-guide-intro">
-                            Sebelum memulai analisis, periksa kembali video
-                            pada pratinjau.
-                        </p>
+                          <!-- File Selected Info -->
+                            <div id="fileSelected" class="hidden-elm flex items-center justify-between gap-4 mt-4 p-4 glass-panel-inner rounded-2xl border-brand-dark/20">
+                                <div class="flex items-center gap-3 min-w-0 overflow-hidden">
+                                    <div class="w-10 h-10 flex-shrink-0 bg-brand-yellow text-brand-dark flex items-center justify-center rounded-xl text-xs font-black shadow-sm">
+                                        MP4
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div id="fileName" class="text-sm font-bold text-brand-dark truncate">-</div>
+                                        <div id="fileSize" class="text-xs font-medium text-brand-dark/60 mt-0.5">-</div>
+                                    </div>
+                                </div>
+                                <button type="button" id="removeFile" class="flex-shrink-0 text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border border-red-200 bg-white">
+                                    Hapus File
+                                </button>
+                            </div>
 
-                        <ul class="upload-guide-list">
-                            <li>Wajah terlihat jelas dan tidak tertutup.</li>
-                            <li>Pencahayaan cukup dan gambar tidak terlalu buram.</li>
-                            <li>File yang dipilih sesuai dengan video yang ingin diperiksa.</li>
-                        </ul>
+                        <!-- Metadata Grid -->
+                        <div id="videoMeta" class="grid grid-cols-2 gap-3">
+                            <div class="glass-panel-inner p-3 rounded-xl overflow-hidden">
+                                <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-wider mb-1">Nama file</span>
+                                <strong id="metaName" class="block text-xs font-bold text-brand-dark truncate">-</strong>
+                            </div>
+                            <div class="glass-panel-inner p-3 rounded-xl">
+                                <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-wider mb-1">Ukuran</span>
+                                <strong id="metaSize" class="block text-xs font-bold text-brand-dark">-</strong>
+                            </div>
+                            <div class="glass-panel-inner p-3 rounded-xl">
+                                <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-wider mb-1">Durasi</span>
+                                <strong id="metaDuration" class="block text-xs font-bold text-brand-dark">-</strong>
+                            </div>
+                            <div class="glass-panel-inner p-3 rounded-xl">
+                                <span class="block text-[10px] font-bold text-brand-dark/50 uppercase tracking-wider mb-1">Resolusi</span>
+                                <strong id="metaResolution" class="block text-xs font-bold text-brand-dark">-</strong>
+                            </div>
+                        </div>
 
-                        <p class="upload-guide-note">
-                            Hasil analisis model tidak selalu benar. Gunakan hasil ini sebagai petunjuk awal
-    dan periksa kembali sebelum mengambil kesimpulan.
-                        </p>
-                    </section>
+                        <!-- Processing Info -->
+                        <div class="glass-panel-inner p-5 rounded-2xl border-brand-yellow/50 bg-brand-yellow/10 mt-auto">
+                            <h3 class="text-sm font-extrabold text-brand-dark mb-3 flex items-center gap-2">
+                                <i class="ph-fill ph-cpu text-lg text-brand-dark"></i>
+                                Tahapan Pemrosesan
+                            </h3>
+                            <div class="space-y-5">
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-5 h-5 bg-white text-brand-dark rounded-full flex items-center justify-center text-[10px] font-black shadow-sm mt-0.5 flex-shrink-0">1</div>
+                                    <p class="text-xs font-medium text-brand-dark/70 leading-relaxed"><strong class="text-brand-dark">Validasi:</strong> Pengecekan format dan durasi file.</p>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-5 h-5 bg-white text-brand-dark rounded-full flex items-center justify-center text-[10px] font-black shadow-sm mt-0.5 flex-shrink-0">2</div>
+                                    <p class="text-xs font-medium text-brand-dark/70 leading-relaxed"><strong class="text-brand-dark">Ekstraksi:</strong> Deteksi wajah pada 60 frame.</p>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-5 h-5 bg-white text-brand-dark rounded-full flex items-center justify-center text-[10px] font-black shadow-sm mt-0.5 flex-shrink-0">3</div>
+                                    <p class="text-xs font-medium text-brand-dark/70 leading-relaxed"><strong class="text-brand-dark">Inferensi:</strong> Pemrosesan via CNN & GRU.</p>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-5 h-5 bg-white text-brand-dark rounded-full flex items-center justify-center text-[10px] font-black shadow-sm mt-0.5 flex-shrink-0">4</div>
+                                    <p class="text-xs font-medium text-brand-dark/70 leading-relaxed"><strong class="text-brand-dark">Klasifikasi:</strong> Menampilkan hasil deteksi.</p>
+                                </div>
+                            </div>
+                        </div>
 
-                </div> <!-- Penutup .panel-body -->
-            </div> <!-- Penutup .upload-panel -->
+                    </div>
+                </aside>
+            </section>
+            
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-6 py-6 border-t border-white/40 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-brand-dark/60">
+            <div><strong class="text-brand-dark font-bold">VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
+            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRU.</div>
+        </footer>
+        
+    </div>
+
+    <!-- Loading Overlay Glassmorphism -->
+    <div id="loadingOverlay" class="fixed inset-0 z-[9999] hidden-elm items-center justify-center p-4 bg-brand-dark/60 backdrop-blur-md transition-opacity">
+        <div class="glass-panel bg-white/90 rounded-[2.5rem] p-10 max-w-sm w-full text-center shadow-2xl relative overflow-hidden">
+            
+            <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 border-4 border-brand-dark/10 border-t-brand-dark rounded-full animate-[loading-spin_1s_linear_infinite]"></div>
+                <div class="absolute inset-2 border-4 border-brand-dark/5 border-b-brand-yellow rounded-full animate-[loading-spin-reverse_1.5s_linear_infinite]"></div>
+                <div class="w-12 h-12 bg-brand-dark rounded-xl flex items-center justify-center text-brand-yellow text-2xl font-black shadow-inner">
+                    V
                 </div>
             </div>
 
-            <aside class="panel preview-panel">
-                <div class="panel-header">
-                    <h2>Pratinjau Video</h2>
-                    <p>Periksa kembali file sebelum proses analisis dimulai.</p>
-                </div>
-
-                <div class="preview-body">
-                    <div class="preview-shell">
-                        <div class="empty-preview" id="emptyPreview">
-                            <div class="empty-preview-icon">▶</div>
-                            <strong>Belum ada video dipilih</strong>
-                            <span>Pratinjau akan muncul di area ini.</span>
-                        </div>
-
-                        <video
-                            id="videoPreview"
-                            controls
-                            preload="metadata">
-                        </video>
-                    </div>
-
-                    <!-- Metadata: hanya satu pembungkus -->
-                    <div class="video-meta" id="videoMeta">
-                        <div class="meta-item">
-                            <span>Nama file</span>
-                            <strong id="metaName">—</strong>
-                        </div>
-
-                        <div class="meta-item">
-                            <span>Ukuran file</span>
-                            <strong id="metaSize">—</strong>
-                        </div>
-
-                        <div class="meta-item">
-                            <span>Durasi</span>
-                            <strong id="metaDuration">—</strong>
-                        </div>
-
-                        <div class="meta-item">
-                            <span>Resolusi</span>
-                            <strong id="metaResolution">—</strong>
-                        </div>
-                    </div>
-
-                    <!-- Kotak kuning berada di luar grid metadata -->
-                    <div class="processing-info">
-                        <h3>Yang akan dilakukan sistem</h3>
-
-                        <p>
-                            Setelah tombol analisis ditekan, video dikirim
-                            dan diproses di server. Durasi pemrosesan
-                            bergantung pada ukuran video serta sumber daya
-                            perangkat.
-                        </p>
-                    </div>
-
-                    <div class="process-list">
-                        <div class="process-item">
-                            <span class="process-number">1</span>
-                            <p>
-                                <strong>Validasi Video</strong> — Sistem memeriksa format, durasi, dan resolusi
-                                video.
-                            </p>
-                        </div>
-
-                        <div class="process-item">
-                            <span class="process-number">2</span>
-                            <p>
-                                <strong>Deteksi Wajah</strong> — Sistem menyiapkan 60 frame
-                                wajah sebagai input model.
-                            </p>
-                        </div>
-
-                        <div class="process-item">
-                            <span class="process-number">3</span>
-                            <p>
-                                <strong>Prediksi Model</strong> — EfficientNetB0 dan GRU
-                                menghasilkan skor prediksi.
-                            </p>
-                        </div>
-
-                          <div class="process-item">
-                            <span class="process-number">4</span>
-                            <p>
-                                <strong>Hasil Deteksi</strong> — Sistem menampilkan hasil prediksi
-                                dari model.
-                            </p>
-                        </div>
-
-                    </div>
-                </div>
-            </aside>
-        </section>
-
-        <section class="container">
-            <div class="disclaimer">
-                <strong>Catatan interpretasi:</strong> skor yang dihasilkan merupakan keluaran probabilitas
-                dari model klasifikasi. Hasil ini mendukung penyaringan awal dan tidak boleh diperlakukan
-                sebagai konfirmasi forensik final tanpa pemeriksaan tambahan oleh pihak yang berwenang.
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container footer-content">
-            <div><strong>VerDeep</strong> — Deteksi ShortVideo Deepfake.</div>
-            <div>Penelitian Deteksi Deepfake Berbasis CNN–GRUan deteksi deepfake berbasis CNN–GRU.</div>
-        </div>
-    </footer>
-
-    <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-busy="true">
-        <div class="loading-card">
-            <div class="loading-logo-wrap">
-                <div class="loading-ring"></div>
-                <div class="loading-ring-inner"></div>
-                <div class="loading-logo">V</div>
-            </div>
-
-            <h2>Video Sedang Dianalisis</h2>
-
-            <p id="loadingStatus">
-                VerDeep sedang menyiapkan video untuk diproses oleh model.
+            <h2 class="text-2xl font-extrabold text-brand-dark mb-2">Memproses Video</h2>
+            <p id="loadingStatus" class="text-xs font-medium text-brand-dark/60 mb-6 h-8 flex items-center justify-center px-4">
+                Menyiapkan jalur pipeline...
             </p>
 
-            <div class="loading-steps">
-                <div class="loading-step">
-                    <span class="loading-pulse"></span>
-                    <span>Memvalidasi file video</span>
+            <div class="flex flex-col gap-2 text-left bg-brand-dark/5 p-4 rounded-2xl">
+                <div class="flex items-center gap-3 text-xs font-bold text-brand-dark">
+                    <div class="w-2 h-2 rounded-full bg-brand-yellow shadow-[0_0_8px_#FCD34D] animate-[loading-pulse_1.5s_infinite]"></div>
+                    Validasi Video
                 </div>
-
-                <div class="loading-step">
-                    <span class="loading-pulse"></span>
-                    <span>Mendeteksi wajah pada 60 frame</span>
+                <div class="flex items-center gap-3 text-xs font-bold text-brand-dark">
+                    <div class="w-2 h-2 rounded-full bg-brand-yellow shadow-[0_0_8px_#FCD34D] animate-[loading-pulse_1.5s_infinite] delay-150"></div>
+                    Deteksi Spasial (CNN)
                 </div>
-
-                <div class="loading-step">
-                    <span class="loading-pulse"></span>
-                    <span>Menghitung skor dengan EfficientNetB0 + GRU</span>
+                <div class="flex items-center gap-3 text-xs font-bold text-brand-dark">
+                    <div class="w-2 h-2 rounded-full bg-brand-yellow shadow-[0_0_8px_#FCD34D] animate-[loading-pulse_1.5s_infinite] delay-300"></div>
+                    Analisis Temporal (GRU)
                 </div>
             </div>
-
-            <span class="loading-note">
-                Jangan tutup atau muat ulang halaman selama proses berlangsung.
-            </span>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-brand-dark/40 mt-6">
+                Mohon jangan tutup halaman
+            </p>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
+        // DOM Elements
         const uploadForm = document.getElementById("uploadForm");
         const videoInput = document.getElementById("videoInput");
         const dropZone = document.getElementById("dropZone");
+        
         const fileSelected = document.getElementById("fileSelected");
         const fileName = document.getElementById("fileName");
         const fileSize = document.getElementById("fileSize");
@@ -1309,6 +392,7 @@
         const videoPreview = document.getElementById("videoPreview");
         const emptyPreview = document.getElementById("emptyPreview");
         const videoMeta = document.getElementById("videoMeta");
+        
         const metaName = document.getElementById("metaName");
         const metaSize = document.getElementById("metaSize");
         const metaDuration = document.getElementById("metaDuration");
@@ -1320,282 +404,142 @@
         const loadingOverlay = document.getElementById("loadingOverlay");
         const loadingStatus = document.getElementById("loadingStatus");
 
+        // Configs
         const allowedExtensions = ["mp4"];
         const maxDuration = 30;
         const maxWidth = 1920;
         const maxHeight = 1080;
-
         let previewUrl = null;
         let loadingMessageTimer = null;
 
-        function formatBytes(bytes) {
-            if (bytes === 0) {
-                return "0 B";
-            }
-
+        // Utilities
+        const formatBytes = (bytes) => {
+            if (bytes === 0) return "0 B";
             const units = ["B", "KB", "MB", "GB"];
             const index = Math.floor(Math.log(bytes) / Math.log(1024));
-            const value = bytes / Math.pow(1024, index);
+            return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 2)} ${units[index]}`;
+        };
 
-            return `${value.toFixed(index === 0 ? 0 : 2)} ${units[index]}`;
-        }
+        const formatDuration = (seconds) => {
+            if (!Number.isFinite(seconds)) return "N/A";
+            const total = Math.round(seconds);
+            return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}s`;
+        };
 
-        function formatDuration(seconds) {
-            if (!Number.isFinite(seconds)) {
-                return "Tidak tersedia";
-            }
+        const getExtension = (filename) => filename.split('.').pop().toLowerCase();
 
-            const totalSeconds = Math.round(seconds);
-            const minutes = Math.floor(totalSeconds / 60);
-            const remainingSeconds = totalSeconds % 60;
+        // UI Handlers
+        const toggleClass = (elm, force) => force ? elm.classList.remove('hidden-elm') : elm.classList.add('hidden-elm');
+        
+        const showError = (msg) => { toggleClass(clientWarning, false); clientErrorText.textContent = msg; toggleClass(clientError, true); };
+        const showWarning = (msg) => { clientWarningText.textContent = msg; toggleClass(clientWarning, true); };
+        const hideError = () => toggleClass(clientError, false);
+        const hideWarning = () => toggleClass(clientWarning, false);
 
-            return `${minutes}:${String(remainingSeconds).padStart(2, "0")} menit`;
-        }
-
-        function getExtension(filename) {
-            const parts = filename.toLowerCase().split(".");
-            return parts.length > 1 ? parts.pop() : "";
-        }
-
-        function showError(message) {
-            clientWarning.classList.remove("visible");
-            clientErrorText.textContent = message;
-            clientError.classList.add("visible");
-        }
-
-        function hideError() {
-            clientError.classList.remove("visible");
-            clientErrorText.textContent = "";
-        }
-
-        function showWarning(message) {
-            clientWarningText.textContent = message;
-            clientWarning.classList.add("visible");
-        }
-
-        function hideWarning() {
-            clientWarning.classList.remove("visible");
-            clientWarningText.textContent = "";
-        }
-
-        function clearPreview() {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-                previewUrl = null;
-            }
-
-            videoPreview.pause();
-            videoPreview.removeAttribute("src");
-            videoPreview.load();
-            videoPreview.style.display = "none";
-
-            emptyPreview.style.display = "block";
-
+        const resetFormState = () => {
+            videoInput.value = "";
+            toggleClass(fileSelected, false);
+            submitButton.disabled = true;
+            submitButton.classList.remove("btn-loading");
+            submitText.textContent = "PILIH VIDEO DAHULU";
+            hideError(); hideWarning();
+            
+            if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+            videoPreview.pause(); videoPreview.removeAttribute("src"); videoPreview.load();
+            toggleClass(videoPreview, false); toggleClass(emptyPreview, true);
+            
+            // Kembalikan teks ke "-" tanpa menyembunyikan elemennya
             metaName.textContent = "-";
             metaSize.textContent = "-";
             metaDuration.textContent = "-";
             metaResolution.textContent = "-";
-        }
+        };
 
-        function resetFormState() {
-            videoInput.value = "";
-            fileSelected.classList.remove("visible");
-
-            fileName.textContent = "-";
-            fileSize.textContent = "-";
-
-            submitButton.disabled = true;
-            submitButton.classList.remove("loading");
-            submitText.textContent = "Pilih Video Dahulu";
-
-            hideError();
-            hideWarning();
-            clearPreview();
-        }
-
-        function validateSelectedFile(file) {
-            if (!file) {
-                return "Silakan pilih file video terlebih dahulu.";
-            }
-
-            const extension = getExtension(file.name);
-
-            if (!allowedExtensions.includes(extension)) {
-                return "Format file belum didukung. Gunakan video dengan format MP4.";
-            }
-
-            if (!file.type.startsWith("video/") && file.type !== "") {
-                return "File yang dipilih bukan media video.";
-            }
-
+        const validateSelectedFile = (file) => {
+            if (!file) return "Silakan pilih file video terlebih dahulu.";
+            if (!allowedExtensions.includes(getExtension(file.name))) return "Hanya format MP4 yang diizinkan.";
+            if (!file.type.startsWith("video/") && file.type !== "") return "File yang dipilih bukan video.";
             return null;
-        }
+        };
 
-        function setFile(file) {
-            const error = validateSelectedFile(file);
-
-            if (error) {
-                resetFormState();
-                showError(error);
-                return;
-            }
-
-            hideError();
-            hideWarning();
-
+        const setFile = (file) => {
+            const err = validateSelectedFile(file);
+            if (err) return resetFormState(), showError(err);
+            
+            hideError(); hideWarning();
             fileName.textContent = file.name;
             fileSize.textContent = formatBytes(file.size);
-            fileSelected.classList.add("visible");
+            toggleClass(fileSelected, true);
 
             metaName.textContent = file.name;
             metaSize.textContent = formatBytes(file.size);
-            metaDuration.textContent = "Memuat...";
-            metaResolution.textContent = "Memuat...";
-            videoMeta.classList.add("visible");
+            metaDuration.textContent = "...";
+            metaResolution.textContent = "...";
+            toggleClass(videoMeta, true);
 
             submitButton.disabled = false;
             submitText.textContent = "MULAI ANALISIS";
 
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
-
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
             previewUrl = URL.createObjectURL(file);
             videoPreview.src = previewUrl;
-            videoPreview.style.display = "block";
-            emptyPreview.style.display = "none";
-        }
+            toggleClass(emptyPreview, false); toggleClass(videoPreview, true);
+        };
 
-        videoInput.addEventListener("change", function () {
-            if (videoInput.files && videoInput.files[0]) {
-                setFile(videoInput.files[0]);
-            }
-        });
-
-        ["dragenter", "dragover"].forEach(function (eventName) {
-            dropZone.addEventListener(eventName, function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                dropZone.classList.add("drag-active");
-            });
-        });
-
-        ["dragleave", "drop"].forEach(function (eventName) {
-            dropZone.addEventListener(eventName, function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                dropZone.classList.remove("drag-active");
-            });
-        });
-
-        dropZone.addEventListener("drop", function (event) {
-            const files = event.dataTransfer.files;
-
-            if (!files || files.length === 0) {
-                return;
-            }
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(files[0]);
-            videoInput.files = dataTransfer.files;
-
+        // Event Listeners
+        videoInput.addEventListener("change", (e) => e.target.files[0] && setFile(e.target.files[0]));
+        
+        ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add("drag-active"); }));
+        ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove("drag-active"); }));
+        
+        dropZone.addEventListener("drop", e => {
+            const files = e.dataTransfer.files;
+            if (!files.length) return;
+            const dt = new DataTransfer(); dt.items.add(files[0]); videoInput.files = dt.files;
             setFile(files[0]);
         });
 
-        removeFile.addEventListener("click", function () {
-            resetFormState();
-        });
+        removeFile.addEventListener("click", resetFormState);
 
-        videoPreview.addEventListener("loadedmetadata", function () {
-            const duration = videoPreview.duration;
-            const width = videoPreview.videoWidth;
-            const height = videoPreview.videoHeight;
-
+        videoPreview.addEventListener("loadedmetadata", () => {
+            const { duration, videoWidth: w, videoHeight: h } = videoPreview;
             metaDuration.textContent = formatDuration(duration);
-
-            metaResolution.textContent =
-                width && height ? `${width} × ${height}` : "Tidak tersedia";
-
-            if (Number.isFinite(duration) && duration > maxDuration) {
-                showWarning(
-                    `Durasi video adalah ${formatDuration(duration)}. Sistem hanya menerima video hingga ${maxDuration} detik dan dapat menolaknya saat diproses.`
-                );
-            } else if (width > maxWidth || height > maxHeight) {
-                showWarning(
-                    `Resolusi video ${width} × ${height} melampaui batas ${maxWidth} × ${maxHeight} dan dapat ditolak saat diproses.`
-                );
-            } else {
-                hideWarning();
-            }
+            metaResolution.textContent = (w && h) ? `${w} × ${h}` : "N/A";
+            
+            if (Number.isFinite(duration) && duration > maxDuration) showWarning(`Durasi ${formatDuration(duration)} melebihi batas ${maxDuration}s.`);
+            else if (w > maxWidth || h > maxHeight) showWarning(`Resolusi melebihi batas ${maxWidth}x${maxHeight}.`);
+            else hideWarning();
         });
 
-        videoPreview.addEventListener("error", function () {
-            metaDuration.textContent = "Tidak tersedia";
-            metaResolution.textContent = "Tidak tersedia";
-
-            showWarning(
-                "Pratinjau tidak dapat dimuat di browser ini. File masih dapat dikirim untuk validasi server."
-            );
+        videoPreview.addEventListener("error", () => {
+            metaDuration.textContent = "N/A"; metaResolution.textContent = "N/A";
+            showWarning("Pratinjau gagal dimuat di browser. File tetap bisa dikirim ke server.");
         });
 
-        uploadForm.addEventListener("submit", function (event) {
+        uploadForm.addEventListener("submit", (e) => {
             const file = videoInput.files ? videoInput.files[0] : null;
-            const error = validateSelectedFile(file);
+            const err = validateSelectedFile(file);
+            if (err) { e.preventDefault(); return showError(err); }
 
-            if (error) {
-                event.preventDefault();
-                showError(error);
-                return;
-            }
-
-            hideError();
-            hideWarning();
-
-            submitButton.disabled = true;
-            submitButton.classList.add("loading");
-            submitText.textContent = "Memulai Analisis...";
-
-            loadingOverlay.classList.add("active");
+            submitButton.disabled = true; submitButton.classList.add("btn-loading"); submitText.textContent = "MENGUNGGAH...";
+            
+            loadingOverlay.classList.remove('hidden-elm');
+            loadingOverlay.style.display = 'flex';
             document.body.style.overflow = "hidden";
 
-            const loadingMessages = [
-                "VerDeep sedang memvalidasi file video.",
-                "VerDeep sedang mengekstrak urutan frame video.",
-                "VerDeep sedang mendeteksi wajah pada frame terpilih.",
-                "VerDeep sedang menjalankan EfficientNetB0 dan GRU.",
-                "VerDeep sedang menyusun hasil prediksi."
-            ];
-
-            let messageIndex = 0;
-
-            if (loadingMessageTimer) {
-                window.clearInterval(loadingMessageTimer);
-            }
-
-            loadingMessageTimer = window.setInterval(function () {
-                messageIndex = (messageIndex + 1) % loadingMessages.length;
-                loadingStatus.textContent = loadingMessages[messageIndex];
-            }, 2400);
+            const msgs = ["Memvalidasi header MP4...", "Mengekstrak 60 frame wajah...", "Menganalisis spasial dengan EfficientNetB0...", "Menganalisis temporal dengan GRU...", "Menyusun skor akhir..."];
+            let i = 0;
+            if (loadingMessageTimer) clearInterval(loadingMessageTimer);
+            loadingMessageTimer = setInterval(() => { i = (i+1)%msgs.length; loadingStatus.textContent = msgs[i]; }, 2500);
         });
 
-        window.addEventListener("pageshow", function () {
-            loadingOverlay.classList.remove("active");
+        window.addEventListener("pageshow", () => {
+            loadingOverlay.style.display = 'none';
+            loadingOverlay.classList.add('hidden-elm');
             document.body.style.overflow = "";
-
-            if (loadingMessageTimer) {
-                window.clearInterval(loadingMessageTimer);
-                loadingMessageTimer = null;
-            }
-        });
-
-        window.addEventListener("beforeunload", function () {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
-
-            if (loadingMessageTimer) {
-                window.clearInterval(loadingMessageTimer);
-            }
+            if (loadingMessageTimer) { clearInterval(loadingMessageTimer); loadingMessageTimer = null; }
+            if (submitButton.classList.contains("btn-loading")) { submitButton.disabled = false; submitButton.classList.remove("btn-loading"); submitText.textContent = "MULAI ANALISIS"; }
         });
     </script>
 </body>
+</html>

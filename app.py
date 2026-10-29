@@ -2,9 +2,11 @@ import os
 import time
 import uuid
 import gc
+import json
+from datetime import datetime
 from tensorflow.keras import backend as K
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from utils.validator import validate_video
@@ -16,9 +18,38 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")
 ALLOWED_EXTENSIONS = {"mp4"}
+# Variabel untuk menunjuk lokasi file JSON penyimpan riwayat
+HISTORY_FILE = os.path.join(app.root_path, 'history.json')
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def save_to_history(filename, label, confidence):
+    """
+    Menyimpan hasil analisis video ke dalam file JSON history.json
+    """
+    if not os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, 'w') as f:
+            json.dump([], f)
+            
+    try:
+        with open(HISTORY_FILE, 'r') as f:
+            history = json.load(f)
+    except json.JSONDecodeError:
+        history = []
+        
+    # Tambahkan di index 0 agar data terbaru selalu berada di paling atas
+    new_entry = {
+        "waktu": datetime.now().strftime("%d %b %Y, %H:%M"),
+        "nama_file": filename,
+        "hasil": label,
+        "skor": f"{confidence:.1f}%"
+    }
+    history.insert(0, new_entry)
+    
+    with open(HISTORY_FILE, 'w') as f:
+        json.dump(history, f)
 
 
 def allowed_file(filename):
@@ -204,6 +235,49 @@ def home():
     """
     return render_template("beranda.html")
 
+@app.route('/riwayat')
+def riwayat():
+    """
+    Menampilkan halaman log/riwayat video yang telah diuji.
+    """
+    history_data = []
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, 'r') as f:
+                history_data = json.load(f)
+        except json.JSONDecodeError:
+            history_data = []
+            
+    return render_template('riwayat.html', riwayat=history_data)
+
+@app.route('/hapus_riwayat/<int:index>', methods=['POST'])
+def hapus_riwayat(index):
+    """
+    Menghapus satu baris data spesifik pada riwayat berdasarkan indeksnya.
+    """
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, 'r') as f:
+                history = json.load(f)
+                
+            if 0 <= index < len(history):
+                history.pop(index)
+                
+                with open(HISTORY_FILE, 'w') as f:
+                    json.dump(history, f)
+        except Exception as e:
+            app.logger.error(f"Gagal menghapus riwayat: {e}")
+            
+    return redirect(url_for('riwayat'))
+
+@app.route('/arsitektur')
+def arsitektur():
+    return render_template('arsitektur.html')
+
+@app.route('/kontak')
+def kontak():
+    return render_template('kontak.html')
+
 
 @app.route("/analisis", methods=["GET", "POST"])
 def index():
@@ -331,6 +405,21 @@ def index():
             prediction_error,
             "⚠"
         )
+        
+    # --- BAGIAN PENAMBAHAN DATA KE RIWAYAT ---
+    # Jika prediksi berhasil dan tidak ada error, simpan data ke JSON history
+    label_to_save = result.get('label', 'Unknown')
+    # Jika labelnya 'Deepfake', mungkin Anda ingin menyimpannya sebagai 'Palsu (Deepfake)' agar sesuai UI
+    if label_to_save == "Deepfake":
+        label_to_save = "Palsu (Deepfake)"
+    elif label_to_save == "Real":
+        label_to_save = "Asli"
+        
+    confidence_to_save = result.get('confidence', 0.0)
+    
+    # Panggil fungsi simpan riwayat
+    save_to_history(original_filename, label_to_save, confidence_to_save)
+    # -----------------------------------------
 
     return render_template(
         "result.html",
