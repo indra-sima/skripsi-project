@@ -4,7 +4,7 @@ git add .
 git commit -m "update css"
 git push
 
-login ( ssh indra@38.147.122.4 )
+login ( ssh indra@38.147.122.4 ) pass : indra
 
 cd ~/skripsi-project
 git pull
