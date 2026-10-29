@@ -239,29 +239,29 @@
 
                         <!-- Meta List -->
                         <div class="grid gap-2">
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Nama file</span>
-                                <strong class="font-bold text-brand-dark truncate max-w-[50%] sm:max-w-[65%]" title="{{ video_filename }}">{{ video_filename }}</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Nama file</span>
+                                <strong class="font-bold text-brand-dark text-right break-all max-w-[65%]" title="{{ video_filename }}">{{ video_filename }}</strong>
                             </div>
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Total frame video</span>
-                                <strong class="font-bold text-brand-dark">{{ video_info.total_frames | default(0) }} frame</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Total frame video</span>
+                                <strong class="font-bold text-brand-dark text-right">{{ video_info.total_frames | default(0) }} frame</strong>
                             </div>
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Frame yang dianalisis</span>
-                                <strong class="font-bold text-brand-dark">{{ result.frame_count }} dari {{ video_info.total_frames | default(0) }}</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Frame yang dianalisis</span>
+                                <strong class="font-bold text-brand-dark text-right">{{ result.frame_count }} dari {{ video_info.total_frames | default(0) }}</strong>
                             </div>
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Waktu prediksi</span>
-                                <strong class="font-bold text-brand-dark">{{ processing_time }} detik</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Waktu prediksi</span>
+                                <strong class="font-bold text-brand-dark text-right">{{ processing_time }} detik</strong>
                             </div>
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Resolusi video</span>
-                                <strong class="font-bold text-brand-dark">{{ video_info.width | default(0) }} × {{ video_info.height | default(0) }} px</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Resolusi video</span>
+                                <strong class="font-bold text-brand-dark text-right">{{ video_info.width | default(0) }} × {{ video_info.height | default(0) }} px</strong>
                             </div>
-                            <div class="flex justify-between items-center p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
-                                <span class="font-bold text-brand-dark/60">Arsitektur prediksi</span>
-                                <strong class="font-bold text-brand-dark">EfficientNetB0 + GRU (64)</strong>
+                            <div class="flex justify-between items-center gap-4 p-3 sm:p-4 bg-white/40 border border-brand-dark/10 rounded-xl text-xs sm:text-sm">
+                                <span class="font-bold text-brand-dark/60 flex-shrink-0">Arsitektur prediksi</span>
+                                <strong class="font-bold text-brand-dark text-right break-words max-w-[65%]">EfficientNetB0 + GRU (64)</strong>
                             </div>
                         </div>
 
